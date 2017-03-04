@@ -1,12 +1,13 @@
 package com.klipspringercui.sgbusgo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Kevin on 3/4/17.
  */
 
-class BusServiceGroup {
+class BusServiceGroup implements Serializable {
     private String serviceNo;
     private ArrayList<BusStop> busStops;
 
