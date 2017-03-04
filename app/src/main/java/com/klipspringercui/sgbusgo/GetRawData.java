@@ -52,7 +52,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
             connection.setRequestMethod("GET");
             connection.connect();
             int response = connection.getResponseCode();
-            Log.d(TAG, "doInBackground: Response code is: " + response);
+            //Log.d(TAG, "doInBackground: Response code is: " + response);
 
             StringBuilder sb = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -94,14 +94,14 @@ class GetRawData extends AsyncTask<String, Void, String> {
      * @param s
      */
     void runInSameThread(String s) {
-        Log.d(TAG, "runInSameThread: starts with param:" + s);
+        //Log.d(TAG, "runInSameThread: starts with param:" + s);
         // onPostExecute(doInBackground(s));  //using the AsyncTask callback methods as ordinary methods.
 
         //or, a better way which does not involve onPostExecute(), so nothing weird would happen
         if (mCallback != null)
             mCallback.onDownloadComplete(doInBackground(s), DownloadStatus.OK);
 
-        Log.d(TAG, "runInSameThread: ends");
+        //Log.d(TAG, "runInSameThread: ends");
     }
 
     /**

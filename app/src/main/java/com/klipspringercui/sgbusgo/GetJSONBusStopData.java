@@ -50,13 +50,13 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
     public void onDownloadComplete(String data, DownloadStatus status) {
         
         if (status == DownloadStatus.OK) {
-            Log.d(TAG, "onDownloadComplete: Data \n" + data);
+            //Log.d(TAG, "onDownloadComplete: Data \n" + data);
 
             
             try {
                 JSONObject jsonData = new JSONObject(data);
                 JSONArray itemsArray = jsonData.getJSONArray("value");
-                Log.d(TAG, "onDownloadComplete: JSONArray length" + itemsArray.length());
+                //Log.d(TAG, "onDownloadComplete: JSONArray length" + itemsArray.length());
 
                 if (itemsArray.length() != 50)
                     transmissionFlag = false;
@@ -70,7 +70,7 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
                     double longitude = jsonBusStop.getDouble("Longitude");
                     BusStop busStopItem = new BusStop(busStopCode, roadName, description, latitude, longitude);
                     busStopsList.add(busStopItem);
-                    Log.d(TAG, "onDownloadComplete: " + busStopItem.toString());
+                    //Log.d(TAG, "onDownloadComplete: " + busStopItem.toString());
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -81,10 +81,10 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
 
     @Override
     protected void onPostExecute(List<BusStop> busStops) {
-        Log.d(TAG, "onPostExecute: starts");
+        //Log.d(TAG, "onPostExecute: starts");
         super.onPostExecute(busStops);
         if (mCallable != null)
             mCallable.onBusStopDataAvailable(this.busStopsList, DownloadStatus.OK);
-        Log.d(TAG, "onPostExecute: ends");
+        //Log.d(TAG, "onPostExecute: ends");
     }
 }

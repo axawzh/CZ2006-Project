@@ -21,6 +21,7 @@ class BusStop implements Serializable {
         this.longitude = longitude;
     }
 
+
     public String getBusStopCode() {
         return busStopCode;
     }
