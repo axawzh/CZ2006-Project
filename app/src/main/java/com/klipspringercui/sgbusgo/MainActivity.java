@@ -95,24 +95,24 @@ public class MainActivity extends AppCompatActivity implements GetJSONBusRouteDa
 //            url = Uri.parse(BUS_STOPS_URL).buildUpon().appendQueryParameter("BusServiceNo", "" + searchBusServiceNo).toString();
 //        }
 
-//        try {
-//            Log.d(TAG, "onResume: recovering stored data");
-//            FileInputStream fis = getApplicationContext().openFileInput(BUS_SERVICES_FILENAME);
-//            ObjectInputStream ois = new ObjectInputStream(fis);
-//            busServices = (HashSet) ois.readObject();
-//           // recyclerViewAdapter.loadNewData(busStops);
-//            Log.d(TAG, "onResume: successfully recovered stored data");
-//            ois.close();
-//            fis.close();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (FileNotFoundException e) {
-//            Log.d(TAG, "onResume: File not found -- loading");
-//            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, url);
-//            getJSONData.execute();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Log.d(TAG, "onResume: recovering stored data");
+            FileInputStream fis = getApplicationContext().openFileInput(BUS_SERVICE_NOS_FILENAME);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            busServices = (HashSet) ois.readObject();
+           // recyclerViewAdapter.loadNewData(busStops);
+            Log.d(TAG, "onResume: successfully recovered stored data");
+            ois.close();
+            fis.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "onResume: File not found -- loading");
+            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, url);
+            getJSONData.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements GetJSONBusRouteDa
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "onBusRouteDataAvailable: File not found -- loading");
+            Log.e(TAG, "onBusRouteDataAvailable: File not found -- loading");
 //            GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, BUS_STOPS_URL);
 //            getJSONData.execute();
         } catch (IOException e) {
@@ -194,8 +194,7 @@ public class MainActivity extends AppCompatActivity implements GetJSONBusRouteDa
                 oos.writeObject(busServiceGroup);
                 oos.close();
                 fos.close();
-                Log.d(TAG, "onBusRouteDataAvailable: writing group data finished");
-                Log.d(TAG, "onBusRouteDataAvailable: service groups size: " + busServiceGroups.size());
+                Log.d(TAG, "onBusRouteDataAvailable: writing group data finished: service groups size: " + busServiceGroups.size());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -210,8 +209,7 @@ public class MainActivity extends AppCompatActivity implements GetJSONBusRouteDa
             oos.writeObject(busServiceNos);
             oos.close();
             fos.close();
-            Log.d(TAG, "onBusRouteDataAvailable: writing all service data finished");
-            Log.d(TAG, "onBusRouteDataAvailable: service nos size: " + busServiceNos.size());
+            Log.d(TAG, "onBusRouteDataAvailable: writing all service data finished service nos size: " + busServiceNos.size());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
