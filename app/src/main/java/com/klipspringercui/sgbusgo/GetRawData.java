@@ -46,7 +46,6 @@ class GetRawData extends AsyncTask<String, Void, String> {
 
         try {
 
-
             URL url = new URL(params[0]);
             connection = (HttpURLConnection) url.openConnection();
             connection.addRequestProperty("AccountKey","1yVK2IbuR/uCdkrfxrpSkw==");

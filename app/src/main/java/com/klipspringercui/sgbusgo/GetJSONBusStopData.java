@@ -19,23 +19,30 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
     private static final String TAG = "GetJSONBusStopData";
     
     private String baseURL;
-    private final DataAvailableCallable mCallable;
+    private final BusStopDataAvailableCallable mCallable;
+    private boolean transmissionFlag;
 
-    public GetJSONBusStopData(DataAvailableCallable mContext, String baseURL) {
+    public GetJSONBusStopData(BusStopDataAvailableCallable mContext, String baseURL) {
         this.mCallable = mContext;
         this.baseURL = baseURL;
     }
 
     private List<BusStop> busStopsList = null;
 
-    interface DataAvailableCallable {
-        void onDataAvailable(List<BusStop> data, DownloadStatus status);
+    interface BusStopDataAvailableCallable {
+        void onBusStopDataAvailable(List<BusStop> data, DownloadStatus status);
     }
     
     @Override
     protected List<BusStop> doInBackground(String... params) {
+        int skipValue = 0;
+        this.transmissionFlag = true;
+        busStopsList = new ArrayList<BusStop>();
         GetRawData getRawData = new GetRawData(this);
-        getRawData.runInSameThread(baseURL);
+        while (transmissionFlag) {
+            getRawData.runInSameThread(baseURL + "?$skip=" + skipValue);
+            skipValue += 50;
+        }
         return null;
     }
 
@@ -44,11 +51,15 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
         
         if (status == DownloadStatus.OK) {
             Log.d(TAG, "onDownloadComplete: Data \n" + data);
-            busStopsList = new ArrayList<BusStop>();
+
             
             try {
                 JSONObject jsonData = new JSONObject(data);
                 JSONArray itemsArray = jsonData.getJSONArray("value");
+                Log.d(TAG, "onDownloadComplete: JSONArray length" + itemsArray.length());
+
+                if (itemsArray.length() != 50)
+                    transmissionFlag = false;
                 
                 for (int i = 0; i < itemsArray.length(); i++) {
                     JSONObject jsonBusStop = itemsArray.getJSONObject(i);
@@ -73,7 +84,7 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
         Log.d(TAG, "onPostExecute: starts");
         super.onPostExecute(busStops);
         if (mCallable != null)
-            mCallable.onDataAvailable(this.busStopsList, DownloadStatus.OK);
+            mCallable.onBusStopDataAvailable(this.busStopsList, DownloadStatus.OK);
         Log.d(TAG, "onPostExecute: ends");
     }
 }

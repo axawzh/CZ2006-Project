@@ -48,6 +48,10 @@ class BusStopsRecyclerViewAdapter extends RecyclerView.Adapter<BusStopsRecyclerV
         return this.busStopList.size();
     }
 
+    public BusStop getBusStop(int position) {
+        return (this.busStopList != null && this.busStopList.size() != 0)? this.busStopList.get(position) : null;
+    }
+
     @Override
     public BusStopViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bus_stop_browse, parent, false);
