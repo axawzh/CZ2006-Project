@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">SGBusGO</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_eta">ETAActivity</string>
+    <string name="title_activity_eta">Estimated Arrival Time</string>
+    <string name="title_activity_alighting_alarm">Alighting Alarm</string>
+    <string name="title_activity_fare_calculator">Fare Calculator</string>
 </resources>

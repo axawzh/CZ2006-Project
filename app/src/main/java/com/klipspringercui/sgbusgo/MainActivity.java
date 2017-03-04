@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements GetJSONBusRouteDa
         });
 
         Button FareCalculator_button = (Button) findViewById(R.id.btnFareCalculator);
-        AlightingAlarm_button.setOnClickListener(new Button.OnClickListener() {
+        FareCalculator_button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, FareCalculatorActivity.class);

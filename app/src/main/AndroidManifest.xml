@@ -25,6 +25,14 @@
             android:label="@string/title_activity_eta"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".BusStopSelectionActivity"></activity>
+        <activity
+            android:name=".AlightingAlarmActivity"
+            android:label="@string/title_activity_alighting_alarm"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FareCalculatorActivity"
+            android:label="@string/title_activity_fare_calculator"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
