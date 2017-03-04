@@ -65,6 +65,15 @@ public class MainActivity extends AppCompatActivity implements GetJSONBusRouteDa
             }
         });
 
+        Button FareCalculator_button = (Button) findViewById(R.id.btnFareCalculator);
+        AlightingAlarm_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FareCalculatorActivity.class);
+                startActivity(intent);
+            }
+        });
+
 //        GetJSONBusRouteData getJSONBusRouteData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
 //        getJSONBusRouteData.execute();
 
