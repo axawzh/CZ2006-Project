@@ -56,9 +56,6 @@ public class ETAActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(ETAActivity.this, BusStopSelectionActivity.class);
-
-//            intent.putExtra(BUSSTOP_SEARCH_MODE, BusStopSelectionActivity.SEARCH_ALL);
-//            intent.putExtra(BUSSTOP_SEARCH_BUSSERVICENO)
             startActivityForResult(intent, 0);
         }
     };

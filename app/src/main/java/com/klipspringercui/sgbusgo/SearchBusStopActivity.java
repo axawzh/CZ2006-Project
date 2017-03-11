@@ -3,6 +3,7 @@ package com.klipspringercui.sgbusgo;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,12 +35,23 @@ public class SearchBusStopActivity extends BaseActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                query = query.trim();
+                if (query.length() > 0) {
+                    Intent intent = getIntent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BusStopSelectionActivity.SEARCH_KEYWORD, query);
+                    intent.putExtras(bundle);
+                    setResult(RESULT_OK, intent);
+                } else {
+                    setResult(RESULT_CANCELED);
+                }
                 finish();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                setResult(RESULT_CANCELED);
                 return false;
             }
         });

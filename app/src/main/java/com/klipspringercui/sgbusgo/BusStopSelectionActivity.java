@@ -37,6 +37,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
                                                                             RecyclerItemOnClickListener.OnRecyclerClickListener {
 
     private static final String TAG = "BusStopSelectionActivit";
+    static final String SEARCH_KEYWORD = "SearchKeyword";
 
 
 //    static final int SEARCH_ALL = 0;
@@ -47,7 +48,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
 
     private BusStopsRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<BusStop> busStops = null;
+
     private boolean force = false;
+    private String searchKeyword;
 
     interface BusStopSelectionCallable {
         void onBusStopSelected(BusStop selection);
@@ -82,16 +85,6 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchBusStopActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onResume() {
@@ -106,23 +99,72 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
             getJSONData.execute();
             return;
         }
-        try {
-            Log.d(TAG, "onResume: recovering stored data");
-            FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_FILENAME);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            busStops = (ArrayList) ois.readObject();
+
+        this.busStops = BusStopsListHolder.getInstance().getData();
+
+        if (this.busStops.size() == 0) {
+            try {
+                Log.d(TAG, "onResume: recovering stored data");
+                FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_FILENAME);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                busStops = (ArrayList) ois.readObject();
+                recyclerViewAdapter.loadNewData(busStops);
+                Log.d(TAG, "onResume: successfully recovered stored data");
+                ois.close();
+                fis.close();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "onResume: File not found -- loading");
+                GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, url);
+                getJSONData.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (this.searchKeyword != null && this.searchKeyword.length() > 0) {
+            Toast.makeText(this, "Search Finished", Toast.LENGTH_SHORT).show();
+            ArrayList<BusStop> shortlisted = new ArrayList<>();
+            BusStop currentBusStop;
+            for (int i = 0; i < busStops.size(); i++) {
+                currentBusStop = busStops.get(i);
+                int index = currentBusStop.getDescription().indexOf(searchKeyword);
+                if (index == -1)
+                    index = currentBusStop.getRoadName().indexOf(searchKeyword);
+                if (index != -1)
+                    shortlisted.add(currentBusStop);
+            }
+            recyclerViewAdapter.loadNewData(shortlisted);
+        } else {
             recyclerViewAdapter.loadNewData(busStops);
-            Log.d(TAG, "onResume: successfully recovered stored data");
-            ois.close();
-            fis.close();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "onResume: File not found -- loading");
-            GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, url);
-            getJSONData.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            Intent intent = new Intent(this, SearchBusStopActivity.class);
+            startActivityForResult(intent, 0);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            if (bundle != null) {
+                searchKeyword = bundle.getString(SEARCH_KEYWORD);
+            }
+        } else {
+            searchKeyword = null;
         }
     }
 
@@ -164,7 +206,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        BusStopsListHolder.getInstance().setData((ArrayList)data);
     }
 
     @Override
@@ -174,11 +216,21 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         Toast.makeText(this, caller, Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onItemClick: calling activity: " + caller);
         Bundle bundle = new Bundle();
+        BusStop selected = recyclerViewAdapter.getBusStop(position);
+        if (selected == null)
+            return;
         switch (caller) {
             case "ETAActivity":
-                bundle.putSerializable(ETAActivity.ETA_SELECTED_BUSSTOP, recyclerViewAdapter.getBusStop(position));
+                bundle.putSerializable(ETAActivity.ETA_SELECTED_BUSSTOP, selected);
+                break;
             case "AlightingAlarmActivity":
-                bundle.putSerializable(AlightingAlarmActivity.ALARM_SELECTED_BUSSTOP, recyclerViewAdapter.getBusStop(position));
+                bundle.putSerializable(AlightingAlarmActivity.AA_SELECTED_BUSSTOP, selected);
+                break;
+            case "FareCalculatorActivity":
+                bundle.putSerializable(FareCalculatorActivity.FC_SELECTED_BUSSTOP, selected);
+                break;
+            default:
+                break;
         }
 
         intent.putExtras(bundle);

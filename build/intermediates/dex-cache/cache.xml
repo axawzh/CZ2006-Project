@@ -79,7 +79,7 @@
         jumboMode="true"
         optimize="true"
         revision="24.0.2"
-        sha1="2ef0b2337a920a4186bccd86cdc5b9b3a301382e">
+        sha1="1f48e802a4bc5564635bb3c598e487e30ecb8534">
         <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_756d9bd5cc217ee77cbddbfea24caf9c09516512.jar" />
     </item>
     <item

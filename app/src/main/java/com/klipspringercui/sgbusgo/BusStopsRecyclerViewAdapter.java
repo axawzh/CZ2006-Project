@@ -45,11 +45,11 @@ class BusStopsRecyclerViewAdapter extends RecyclerView.Adapter<BusStopsRecyclerV
 
     @Override
     public int getItemCount() {
-        return this.busStopList.size();
+        return (this.busStopList != null && this.busStopList.size() > 0)? this.busStopList.size() : 1;
     }
 
     public BusStop getBusStop(int position) {
-        return (this.busStopList != null && this.busStopList.size() != 0)? this.busStopList.get(position) : null;
+        return (this.busStopList != null && this.busStopList.size() > 0)? this.busStopList.get(position) : null;
     }
 
     @Override
@@ -60,9 +60,15 @@ class BusStopsRecyclerViewAdapter extends RecyclerView.Adapter<BusStopsRecyclerV
 
     @Override
     public void onBindViewHolder(BusStopViewHolder holder, int position) {
-        BusStop busStopItem = this.busStopList.get(position);
-        holder.description.setText(busStopItem.getDescription());
-        holder.roadName.setText(busStopItem.getRoadName());
+        if (this.busStopList != null && this.busStopList.size() == 0) {
+            holder.description.setText(R.string.bus_stop_no_match);
+            holder.roadName.setText("");
+        } else {
+            BusStop busStopItem = this.busStopList.get(position);
+            holder.description.setText(busStopItem.getDescription());
+            holder.roadName.setText(busStopItem.getRoadName());
+        }
+
     }
 
 

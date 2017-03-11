@@ -26,14 +26,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".BusStopSelectionActivity" />
         <activity
-            android:name=".AlightingAlarmActivity"
-            android:label="@string/title_activity_alighting_alarm"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".FareCalculatorActivity"
-            android:label="@string/title_activity_fare_calculator"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".BaseActivity"
             android:label="@string/title_activity_base"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -46,11 +38,24 @@
                 android:value="com.klipspringercui.sgbusgo.BusStopSelectionActivity" />
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+                android:resource="@xml/searchable" />
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".FareCalculatorActivity"
+            android:label="@string/title_activity_fare_calculator"
+            android:parentActivityName=".BaseActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.klipspringercui.sgbusgo.BaseActivity" />
+        </activity>
+        <activity
+            android:name=".AlightingAlarmActivity"
+            android:label="@string/title_activity_alighting_alarm"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
