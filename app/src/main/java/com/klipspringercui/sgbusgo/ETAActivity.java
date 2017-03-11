@@ -20,12 +20,12 @@ public class ETAActivity extends AppCompatActivity {
     static final String ETA_SEARCH_BUSSERVICENO = "ETA SEARCH BUS SERVICE NO";
     static final String ETA_SEARCH_BUSSTOPNO = "ETA SEARCH BUS STOP NO";
     static final String ETA_SELECTED_BUSSTOP = "ETA SELECTED BUS STOP";
+    static final String ETA_SELECTED_BUSSERVICENO = "ETA SELECTED BUS SERVICE NO";
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;
 
     Button buttonSelectBusStop = null;
     TextView textSelectedBusStop = null;
-
 
 
 

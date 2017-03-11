@@ -11,7 +11,7 @@ import android.widget.TextView;
 /**
  * Created by Zhenghao on 4/3/17.
  */
-public class AlightingAlarmActivity extends AppCompatActivity{
+public class AlightingAlarmActivity extends BaseActivity{
     static final String ALARM_SELECTED_BUSSTOP = "ALARM SELECTED BUS STOP";
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;
@@ -23,8 +23,7 @@ public class AlightingAlarmActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alightingalarm);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        activateToolBar(false);
 
         textSelectedBusStop = (TextView) findViewById(R.id.txtSelectedBusStop);
         buttonSelectBusStop = (Button) findViewById(R.id.btnSelectBusStop);

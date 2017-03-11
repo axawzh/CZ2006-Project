@@ -11,7 +11,7 @@ import android.widget.TextView;
 /**
  * Created by Zhenghao on 4/3/17.
  */
-public class FareCalculatorActivity extends AppCompatActivity{
+public class FareCalculatorActivity extends BaseActivity{
     static final String CALCULATOR_SELECTED_BUSSTOP = "CALCULATOR SELECTED BUS STOP";
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;
@@ -23,8 +23,7 @@ public class FareCalculatorActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farecalculator);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        activateToolBar(false);
 
         textSelectedBusStop = (TextView) findViewById(R.id.txtSelectedBusStop);
         buttonSelectBusStop = (Button) findViewById(R.id.btnSelectBusStop);

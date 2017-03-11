@@ -1,5 +1,7 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,7 +10,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,16 +30,15 @@ import java.util.List;
 
 import static android.R.attr.searchMode;
 import static com.klipspringercui.sgbusgo.ETAActivity.ETA_SELECTED_BUSSTOP;
-import static com.klipspringercui.sgbusgo.MainActivity.BUS_STOPS_URL;
 
 
-public class BusStopSelectionActivity extends AppCompatActivity implements GetJSONBusStopData.BusStopDataAvailableCallable,
+
+public class BusStopSelectionActivity extends BaseActivity implements GetJSONBusStopData.BusStopDataAvailableCallable,
                                                                             RecyclerItemOnClickListener.OnRecyclerClickListener {
 
     private static final String TAG = "BusStopSelectionActivit";
 
-    static final String BUS_STOPS_FILENAME = "bus_stops.ser";
-    static final String BUS_STOPS_MAP_FILENAME = "bus_stops_map.ser";
+
 //    static final int SEARCH_ALL = 0;
 //    static final int SEARCH_BUS_NO = 1;
 
@@ -43,6 +47,7 @@ public class BusStopSelectionActivity extends AppCompatActivity implements GetJS
 
     private BusStopsRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<BusStop> busStops = null;
+    private boolean force = false;
 
     interface BusStopSelectionCallable {
         void onBusStopSelected(BusStop selection);
@@ -60,6 +65,7 @@ public class BusStopSelectionActivity extends AppCompatActivity implements GetJS
 //            searchBusServiceNo = intent.getIntExtra(BUSSTOP_SEARCH_BUSSERVICENO, 0);
 //        }
 
+        activateToolBar(false);
         busStops = new ArrayList<BusStop>();
         RecyclerView busStopRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_busStop);
         busStopRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -71,13 +77,35 @@ public class BusStopSelectionActivity extends AppCompatActivity implements GetJS
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_select, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            Intent intent = new Intent(this, SearchBusStopActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        String url = MainActivity.BUS_STOPS_URL;
+        String url = BUS_STOPS_URL;
 //        if (searchMode == SEARCH_BUS_NO && searchBusServiceNo != 0) {
 //            url = Uri.parse(BUS_STOPS_URL).buildUpon().appendQueryParameter("BusServiceNo", "" + searchBusServiceNo).toString();
 //        }
 
+        if (force) {
+            GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, url);
+            getJSONData.execute();
+            return;
+        }
         try {
             Log.d(TAG, "onResume: recovering stored data");
             FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_FILENAME);

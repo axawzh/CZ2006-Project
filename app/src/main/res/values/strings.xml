@@ -4,4 +4,6 @@
     <string name="title_activity_eta">Estimated Arrival Time</string>
     <string name="title_activity_alighting_alarm">Alighting Alarm</string>
     <string name="title_activity_fare_calculator">Fare Calculator</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_activity_search_bus_stop">Search Bus Stops</string>
 </resources>
