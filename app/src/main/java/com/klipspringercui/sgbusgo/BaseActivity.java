@@ -14,6 +14,7 @@ public class BaseActivity extends AppCompatActivity {
     static final String BUS_ROUTES_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusRoutes";
     static final String BUS_STOPS_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusStops";
     static final String ETA_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusArrival";
+    static final String FARE_URL = "https://data.gov.sg/api/action/datastore_search?resource_id=d9b3b8ec-ac41-41f1-b76f-70396125774d&limit=50";
 
     static final String BUS_GROUPS_FILENAME = "bus_group_";
     static final String BUS_SERVICES_SET_FILENAME = "bus_service_nos_set.ser";
@@ -25,6 +26,7 @@ public class BaseActivity extends AppCompatActivity {
     static final String SEARCH_AID = "BUS_STOP_SEARCH_AID";
     static final int REQUEST_BUSSTOP = 1;
     static final int REQUEST_BUSSERVICE = 2;
+    static final int REQUEST_BUSSTOP_B = 3;
     static final int SEARCHMODE_WITHSN = 1;
     static final int SEARCHMODE_WITHOUTSN = 2;
 

@@ -146,7 +146,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     public void onBusRouteDataAvailable(List<BusRoute> data, DownloadStatus status) {
         Log.d(TAG, "onBusRouteDataAvailable: data - " + data);
         ArrayList<BusGroup> busGroups = new ArrayList<BusGroup>();
-        this.busServicesSet = new HashSet<String>();
         this.busServicesList = new ArrayList<String>();
         String currentServiceNo = null;
         ArrayList<BusStop> currentBusStops = null;
@@ -181,7 +180,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             }
             if (!currentRoute.getServiceNo().equalsIgnoreCase(currentServiceNo)) {
                 BusGroup busServiceGroup = new BusGroup(currentServiceNo, currentBusStops);
-                this.busServicesSet.add(currentServiceNo);
                 this.busServicesList.add(currentServiceNo);
                 busGroups.add(busServiceGroup);
                 currentServiceNo = currentRoute.getServiceNo();
@@ -189,7 +187,14 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             }
             if (currentRoute.getServiceNo().equalsIgnoreCase(currentServiceNo)) {
                 BusStop currentBusStop = this.busStopsMap.get(currentRoute.getBusStopCode());
-                currentBusStops.add(currentBusStop);
+                if (currentBusStop == null)
+                    continue;
+                try {
+                    BusStop busStop = new BusStop(currentBusStop, currentRoute.getDistance());
+                    currentBusStops.add(busStop);
+                } catch (NullPointerException e ) {
+                    Log.e(TAG, "onBusRouteDataAvailable: null pointer ");
+                }
             }
         }
 
@@ -219,23 +224,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
 
         /**
-         * Writing services as HashSet
-         */
-        try {
-            Log.d(TAG, "onBusRouteDataAvailable: writing all service set data");
-            FileOutputStream fos = getApplicationContext().openFileOutput(BUS_SERVICES_SET_FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(busServicesSet);
-            oos.close();
-            fos.close();
-            Log.d(TAG, "onBusRouteDataAvailable: writing all service set data finished with size: " + busServicesSet.size());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        /**
          * Writing services as list
          */
         try {
@@ -245,7 +233,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             oos.writeObject(busServicesList);
             oos.close();
             fos.close();
-            Log.d(TAG, "onBusRouteDataAvailable: writing all service data finished service nos size: " + busServicesSet.size());
+            Log.d(TAG, "onBusRouteDataAvailable: writing all service data finished service nos size: " + busServicesList.size());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

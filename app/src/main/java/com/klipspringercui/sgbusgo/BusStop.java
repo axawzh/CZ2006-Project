@@ -16,6 +16,7 @@ class BusStop implements Serializable {
     private String roadName;
     private double latitude;
     private double longitude;
+    private double distance;
 
     public BusStop(String busStopCode, String roadName, String description, double latitude, double longitude) {
         this.busStopCode = busStopCode;
@@ -23,9 +24,19 @@ class BusStop implements Serializable {
         this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.distance = 0;
     }
 
-//    public BusStop(Parcel source) {
+    public BusStop(BusStop data, double distance) {
+        this.busStopCode = data.getBusStopCode();
+        this.description = data.getDescription();
+        this.roadName = data.getRoadName();
+        this.latitude = data.getLatitude();
+        this.longitude = data.getLongitude();
+        this.distance = distance;
+    }
+
+    //    public BusStop(Parcel source) {
 //        this.busStopCode = source.readString();
 //        this.description = source.readString();
 //        this.roadName = source.readString();
@@ -79,6 +90,10 @@ class BusStop implements Serializable {
         return roadName;
     }
 
+    public double getDistance() {
+        return distance;
+    }
+
     public String toString() {
         return "Bus Stop: {" +
                 " Code = " + busStopCode +
@@ -86,6 +101,7 @@ class BusStop implements Serializable {
                 ", Description = " + description +
                 ", Latitude = " + latitude +
                 ", Longitude = " + longitude +
+                ", Distance = " + distance +
                 " }";
     }
 

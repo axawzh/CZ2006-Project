@@ -54,29 +54,35 @@ class GetJSONBusRouteData extends AsyncTask<String, Void, List<BusRoute>> implem
     public void onDownloadComplete(String data, DownloadStatus status) {
 
         if (status == DownloadStatus.OK) {
-            Log.d(TAG, "onDownloadComplete: Data \n" + data);
+//            Log.d(TAG, "onDownloadComplete: Data \n" + data);
 
             try {
                 JSONObject jsonData = new JSONObject(data);
                 JSONArray itemsArray = jsonData.getJSONArray("value");
-                Log.d(TAG, "onDownloadComplete: JSONArray length" + itemsArray.length());
+//                Log.d(TAG, "onDownloadComplete: JSONArray length" + itemsArray.length());
 
                 if (itemsArray.length() != 50)
                     transmissionFlag = false;
 
                 for (int i = 0; i < itemsArray.length(); i++) {
+
                     JSONObject jsonBusRoute = itemsArray.getJSONObject(i);
                     String serviceNo = jsonBusRoute.getString("ServiceNo");
                     String busStopCode = jsonBusRoute.getString("BusStopCode");
-                    double distance = jsonBusRoute.getDouble("Distance");
+                    double distance;
+                    if (jsonBusRoute.isNull("Distance")) {
+                        distance = 0;
+                    } else {
+                        distance = jsonBusRoute.getDouble("Distance");
+                    }
                     int seq = jsonBusRoute.getInt("StopSequence");
                     BusRoute busRouteItem = new BusRoute(serviceNo, busStopCode, seq, distance);
                     busRoutesList.add(busRouteItem);
-                    Log.d(TAG, "onDownloadComplete: " + busRouteItem.toString());
+//                    Log.d(TAG, "onDownloadComplete: " + busRouteItem.toString());
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.e(TAG, "onDownloadComplete: JSONException" + e.getMessage());
+//                Log.e(TAG, "onDownloadComplete: JSONException" + e.getMessage());
             }
         }
     }
