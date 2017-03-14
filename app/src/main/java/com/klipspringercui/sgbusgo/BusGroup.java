@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Created by Kevin on 3/4/17.
  */
 
-class BusGroup implements Serializable, Parcelable {
+class BusGroup implements Serializable {
 
     private String serviceNo;
     private ArrayList<BusStop> busStops;
@@ -20,33 +20,33 @@ class BusGroup implements Serializable, Parcelable {
         this.busStops = busStops;
     }
 
-    public BusGroup(Parcel source) {
-        this.serviceNo = source.readString();
-        source.readTypedList(this.busStops, BusStop.CREATOR);
-    }
+//    public BusGroup(Parcel source) {
+//        this.serviceNo = source.readString();
+//        source.readTypedList(this.busStops, BusStop.CREATOR);
+//    }
 
-    static final Parcelable.Creator CREATOR = new Parcelable.Creator<BusGroup>(){
-        @Override
-        public BusGroup createFromParcel(Parcel source) {
-            return new BusGroup(source);
-        }
-
-        @Override
-        public BusGroup[] newArray(int size) {
-            return new BusGroup[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(serviceNo);
-        dest.writeTypedList(busStops);
-    }
+//    static final Parcelable.Creator CREATOR = new Parcelable.Creator<BusGroup>(){
+//        @Override
+//        public BusGroup createFromParcel(Parcel source) {
+//            return new BusGroup(source);
+//        }
+//
+//        @Override
+//        public BusGroup[] newArray(int size) {
+//            return new BusGroup[size];
+//        }
+//    };
+//
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(serviceNo);
+//        dest.writeTypedList(busStops);
+//    }
 
     public String getServiceNo() {
         return serviceNo;

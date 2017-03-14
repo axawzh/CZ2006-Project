@@ -30,7 +30,7 @@
             android:label="@string/title_activity_base"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".SearchBusStopActivity"
+            android:name=".SearchActivity"
             android:label="@string/title_activity_search_bus_stop"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -39,6 +39,7 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -55,7 +56,8 @@
         <activity
             android:name=".AlightingAlarmActivity"
             android:label="@string/title_activity_alighting_alarm"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BusServiceSelectionActivity"></activity>
     </application>
 
 </manifest>

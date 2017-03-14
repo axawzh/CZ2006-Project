@@ -37,7 +37,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
                                                                             RecyclerItemOnClickListener.OnRecyclerClickListener {
 
     private static final String TAG = "BusStopSelectionActivit";
-    static final String SEARCH_KEYWORD = "SearchKeyword";
+    static final String BUS_STOP_SEARCH_KEYWORD = "SearchKeyword";
 
 
 //    static final int SEARCH_ALL = 0;
@@ -51,6 +51,8 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
 
     private boolean force = false;
     private String searchKeyword;
+    private int searchMode = SEARCHMODE_WITHOUTSN;
+    private String searchAid;
 
     interface BusStopSelectionCallable {
         void onBusStopSelected(BusStop selection);
@@ -77,6 +79,15 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         busStopRecyclerView.addItemDecoration(new DividerItemDecoration(this, R.drawable.divider));
         busStopRecyclerView.addOnItemTouchListener(new RecyclerItemOnClickListener(this, busStopRecyclerView, this));
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            this.searchMode = bundle.getInt(SEARCH_MODE);
+            if (this.searchMode == SEARCHMODE_WITHSN) {
+                this.searchAid = bundle.getString(SEARCH_AID);
+            }
+        }
+
     }
 
     @Override
@@ -90,9 +101,6 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     protected void onResume() {
         super.onResume();
         String url = BUS_STOPS_URL;
-//        if (searchMode == SEARCH_BUS_NO && searchBusServiceNo != 0) {
-//            url = Uri.parse(BUS_STOPS_URL).buildUpon().appendQueryParameter("BusServiceNo", "" + searchBusServiceNo).toString();
-//        }
 
         if (force) {
             GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, url);
@@ -100,7 +108,34 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
             return;
         }
 
-        this.busStops = BusStopsListHolder.getInstance().getData();
+        if (this.searchMode == SEARCHMODE_WITHSN && searchAid != null) {
+            String filename = BUS_GROUPS_FILENAME + searchAid + ".ser";
+            try {
+                Log.d(TAG, "onResume: recovering stored data - " + filename);
+                FileInputStream fis = getApplicationContext().openFileInput(filename);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                BusGroup busGroup = (BusGroup) ois.readObject();
+                this.busStops = busGroup.getBusStops();
+                if (this.busStops == null || this.busStops.size() == 0) {
+                    Log.e(TAG, "onResume: bus group data damaged");
+                    this.busStops = BusStopsListHolder.getInstance().getData();
+                }
+                recyclerViewAdapter.loadNewData(busStops);
+                Toast.makeText(this, "Displaying Bus Stops of Service " + searchAid, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onResume: successfully recovered stored data");
+                ois.close();
+                fis.close();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "onResume: File not found -- loading all");
+                this.busStops = BusStopsListHolder.getInstance().getData();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            this.busStops = BusStopsListHolder.getInstance().getData();
+        }
 
         if (this.busStops.size() == 0) {
             try {
@@ -129,9 +164,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
             BusStop currentBusStop;
             for (int i = 0; i < busStops.size(); i++) {
                 currentBusStop = busStops.get(i);
-                int index = currentBusStop.getDescription().indexOf(searchKeyword);
+                int index = currentBusStop.getDescription().toLowerCase().indexOf(searchKeyword.toLowerCase());
                 if (index == -1)
-                    index = currentBusStop.getRoadName().indexOf(searchKeyword);
+                    index = currentBusStop.getRoadName().toLowerCase().indexOf(searchKeyword.toLowerCase());
                 if (index != -1)
                     shortlisted.add(currentBusStop);
             }
@@ -148,7 +183,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchBusStopActivity.class);
+            Intent intent = new Intent(this, SearchActivity.class);
             startActivityForResult(intent, 0);
             return true;
         }
@@ -161,10 +196,12 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         if (requestCode == 0 && resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
             if (bundle != null) {
-                searchKeyword = bundle.getString(SEARCH_KEYWORD);
+                this.searchKeyword = bundle.getString(BUS_STOP_SEARCH_KEYWORD);
+            } else {
+                this.searchKeyword = null;
             }
         } else {
-            searchKeyword = null;
+            this.searchKeyword = null;
         }
     }
 
@@ -232,7 +269,6 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
             default:
                 break;
         }
-
         intent.putExtras(bundle);
         setResult(RESULT_OK, intent);
         finish();

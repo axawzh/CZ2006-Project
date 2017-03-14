@@ -20,6 +20,7 @@ import static com.klipspringercui.sgbusgo.FareCalculatorActivity.FC_SELECTED_BUS
 public class AlightingAlarmActivity extends BaseActivity {
 
     static final String AA_SELECTED_BUSSTOP = "ALARM SELECTED BUS STOP";
+    static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;
 

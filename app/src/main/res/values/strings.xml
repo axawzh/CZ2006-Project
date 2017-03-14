@@ -4,7 +4,13 @@
     <string name="title_activity_eta">Estimated Arrival Time</string>
     <string name="title_activity_alighting_alarm">Alighting Alarm</string>
     <string name="title_activity_fare_calculator">Fare Calculator</string>
-    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_activity_base">SGBusGo</string>
     <string name="title_activity_search_bus_stop">Search Bus Stops</string>
+    <string name="title_activity_bus_service_selection">Select Bus Service No</string>
+    <string name="title_activity_bus_stop_selection">Select Bus Stop</string>
     <string name="bus_stop_no_match">No Bus Stop Matches</string>
+    <string name="bus_service_no_match">No bus service number matches</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

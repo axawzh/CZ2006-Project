@@ -26,7 +26,8 @@ import java.util.List;
 
 
 public class MainActivity extends BaseActivity implements GetJSONBusRouteData.BusRoutesDataAvailableCallable,
-                                                        GetJSONBusStopData.BusStopDataAvailableCallable {
+                                                        GetJSONBusStopData.BusStopDataAvailableCallable,
+                                                        LoadLocalData.DataLoadCallable {
 
     private static final String TAG = "MainActivity";
     private static final String BUS_STOPS_MAP = "BUT STOPS MAP";
@@ -99,6 +100,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             Log.d(TAG, "onResume: Downloading Bus Route Data");
             GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
             getJSONData.execute();
+            force = false;
             return;
         }
         
@@ -112,107 +114,11 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
         Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show();
 
-        try {
-            Log.d(TAG, "onResume: recovering stored data");
-            FileInputStream fis = getApplicationContext().openFileInput(BUS_SERVICES_FILENAME);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            this.busServicesList = (ArrayList) ois.readObject();
-            // recyclerViewAdapter.loadNewData(busStops);
-            Log.d(TAG, "onResume: successfully recovered stored data");
-            ois.close();
-            fis.close();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "onResume: Bus Service File not found -- loading");
-            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
-            getJSONData.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        LoadLocalData loadLocalData = new LoadLocalData(getApplicationContext(), this);
+        loadLocalData.execute();
 
-        try {
-            Log.d(TAG, "onResume: recovering stored bus stop list data");
-            FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_FILENAME);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            this.busStopsList = (ArrayList) ois.readObject();
-            // recyclerViewAdapter.loadNewData(busStops);
-            Log.d(TAG, "onResume: successfully recovered stored data");
-            ois.close();
-            fis.close();
-        } catch (ClassNotFoundException e) {
-            Log.e(TAG, "onResume: class not found");
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "onResume: Bus Stops File not found");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Toast.makeText(this, "Loading finished", Toast.LENGTH_SHORT).show();
-
-        BusServicesListHolder.getInstance().setData(busServicesList);
-        BusStopsListHolder.getInstance().setData(busStopsList);
-
-
-//        try {
-//            Log.d(TAG, "onResume: recovering stored data");
-//            FileInputStream fis = getApplicationContext().openFileInput(BUS_SERVICES_SET_FILENAME);
-//            ObjectInputStream ois = new ObjectInputStream(fis);
-//            busServicesSet = (HashSet) ois.readObject();
-//           // recyclerViewAdapter.loadNewData(busStops);
-//            Log.d(TAG, "onResume: successfully recovered stored data");
-//            ois.close();
-//            fis.close();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (FileNotFoundException e) {
-//            Log.d(TAG, "onResume: File not found -- loading");
-//            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
-//            getJSONData.execute();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//        try {
-//            Log.d(TAG, "onResume: recovering stored bus stop set data");
-//            FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_MAP_FILENAME);
-//            ObjectInputStream ois = new ObjectInputStream(fis);
-//            this.busStopsMap = (HashMap) ois.readObject();
-//            // recyclerViewAdapter.loadNewData(busStops);
-//            Log.d(TAG, "onResume: successfully recovered stored data");
-//            ois.close();
-//            fis.close();
-//        } catch (ClassNotFoundException e) {
-//            Log.e(TAG, "onResume: class not found");
-//        } catch (FileNotFoundException e) {
-//            Log.e(TAG, "onResume: file not found");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-        //Check all internally-stored files
-//        File directory = getFilesDir();
-//        File[] files = directory.listFiles();
-//        for (int i = 0; i < files.length; i++)
-//            Log.d(TAG, "onResume: all files:" + files[i]);
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        Log.d(TAG, "onSaveInstanceState: starts");
-//        outState.putStringArrayList(BUS_SERVICES_LIST, this.busServicesList);
-//        outState.putParcelableArrayList(BUS_STOP_LIST, this.busStopsList);
-//        super.onSaveInstanceState(outState);
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        Log.d(TAG, "onRestoreInstanceState: starts");
-//        super.onRestoreInstanceState(savedInstanceState);
-//        this.busServicesList = savedInstanceState.getStringArrayList(BUS_SERVICES_LIST);
-//        this.busStopsList = savedInstanceState.getParcelableArrayList(BUS_SERVICES_LIST);
-//        restored = true;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -349,6 +255,24 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         BusServicesListHolder.getInstance().setData(busServicesList);
         BusStopsListHolder.getInstance().setData(busStopsList);
 
+    }
+
+    @Override
+    public void onDataLoaded(int flag) {
+        if (flag == LoadLocalData.LOAD_OK) {
+            Log.d(TAG, "onDataLoaded: Local Cached Data Successful Loaded");
+            Toast.makeText(this, "Data loaded", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(TAG, "onDataLoaded: Local Cached Data Load Failure");
+            Toast.makeText(this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onResume: Downloading Bus Stop Data");
+            GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(this, BUS_STOPS_URL);
+            getJSONBusStopData.execute();
+            Toast.makeText(this, "Downloading Bus Routes Data", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onResume: Downloading Bus Route Data");
+            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
+            getJSONData.execute();
+        }
     }
 
     @Override

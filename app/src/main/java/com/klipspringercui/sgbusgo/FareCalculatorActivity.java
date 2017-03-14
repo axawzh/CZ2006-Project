@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class FareCalculatorActivity extends BaseActivity {
 
     static final String FC_SELECTED_BUSSTOP = "CALCULATOR SELECTED BUS STOP";
+    static final String FC_SELECTED_BUSSERVICENO = "CALCULATOR SELECTED BUS SERVICE NO";
 
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;

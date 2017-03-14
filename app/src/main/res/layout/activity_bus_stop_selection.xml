@@ -11,10 +11,11 @@
     tools:context="com.klipspringercui.sgbusgo.BusStopSelectionActivity">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_busStop"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/recycler_view_busStop" />
+        android:scrollbars="vertical" />
 </RelativeLayout>

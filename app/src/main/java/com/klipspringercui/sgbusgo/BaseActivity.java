@@ -13,12 +13,21 @@ public class BaseActivity extends AppCompatActivity {
 
     static final String BUS_ROUTES_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusRoutes";
     static final String BUS_STOPS_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusStops";
+    static final String ETA_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusArrival";
 
     static final String BUS_GROUPS_FILENAME = "bus_group_";
     static final String BUS_SERVICES_SET_FILENAME = "bus_service_nos_set.ser";
     static final String BUS_SERVICES_FILENAME = "bus_services.ser";
     static final String BUS_STOPS_FILENAME = "bus_stops.ser";
     static final String BUS_STOPS_MAP_FILENAME = "bus_stops_map.ser";
+
+    static final String SEARCH_MODE = "BUS_STOP_SEARCH_MODE";
+    static final String SEARCH_AID = "BUS_STOP_SEARCH_AID";
+    static final int REQUEST_BUSSTOP = 1;
+    static final int REQUEST_BUSSERVICE = 2;
+    static final int SEARCHMODE_WITHSN = 1;
+    static final int SEARCHMODE_WITHOUTSN = 2;
+
 
 
     void activateToolBar(boolean enableHome) {

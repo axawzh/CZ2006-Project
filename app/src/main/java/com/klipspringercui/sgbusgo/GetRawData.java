@@ -19,6 +19,8 @@ import java.net.URL;
 enum DownloadStatus {IDLE, PROCESSING, NOT_INITIALISED, FAILED_OR_EMPTY, OK};
 
 class GetRawData extends AsyncTask<String, Void, String> {
+
+    private static final String ACCOUNT_KEY = "1yVK2IbuR/uCdkrfxrpSkw==";
     private static final String TAG = "GetRawData";
     private DownloadStatus mDownloadStatus;
     private final DataDownloadCallable mCallback;
@@ -48,7 +50,7 @@ class GetRawData extends AsyncTask<String, Void, String> {
 
             URL url = new URL(params[0]);
             connection = (HttpURLConnection) url.openConnection();
-            connection.addRequestProperty("AccountKey","1yVK2IbuR/uCdkrfxrpSkw==");
+            connection.addRequestProperty("AccountKey",ACCOUNT_KEY);
             connection.setRequestMethod("GET");
             connection.connect();
             int response = connection.getResponseCode();
