@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "532223043473",
+    "firebase_url": "https://sgbusgo.firebaseio.com",
+    "project_id": "sgbusgo",
+    "storage_bucket": "sgbusgo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532223043473:android:8752a751b2a4181c",
+        "android_client_info": {
+          "package_name": "com.klipspringercui.sgbusgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "532223043473-kscfmgungp18jdujb6k1evto3tnl4afm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2glJOJJsvEKDS2HAR4Y2YeEhZyLK1DEw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

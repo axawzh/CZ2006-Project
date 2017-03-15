@@ -3,21 +3,102 @@
 
     <item
         is-multidex="false"
-        jar="/Users/Kevin/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/25.2.0/support-annotations-25.2.0.jar"
+        jar="/Users/Kevin/.android/build-cache/42d38cc93b00bedd18608dc28d6a0c083b91b10c/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.0"
-        sha1="4a5a82a027706397fff621b22fd6fa796e91d7c5">
-        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/support-annotations-25.2.0_e5e627b514ba761fba09f2761f0ac5f20f4daee4.jar" />
+        sha1="1df6d719c4e264d66bb98baa5cb637495b8cca66">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_facf5139d270bc6490ba24eb44789d0c7c4deac1.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/Users/Kevin/.android/build-cache/9f61d6034be2f68479dc468f132f888667e1f1b1/output/jars/classes.jar"
+        jar="/Users/Kevin/.android/build-cache/8fb6c0ba35c8a01bd1707e9e0bcd93751ca07ba2/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.0"
-        sha1="30a4938ea5235ccf532b3e9f04200e68547e36ad">
-        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_518dd8dc64992932dbf2e3f7707a8217304c0706.jar" />
+        sha1="1ac56e5801e986583cbe27f2cce57f626cc7ff93">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_3554b6b03afc52627f49b20bc16c43ade536a3e8.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/964ca0cde530e0456bbce9f3a6c8215a2061f12e/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="a61e7010aa7be5da53cd1bc5279630510c9a4912">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_8e48c48969b22a9413110465603fa1cf00fe3f59.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/7b760f52792bc55c4eea3e6d9f32d9c883eafde7/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ce9112e08a027c8620ae693983e38cdbb9f6371b">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_b32c9f03d19513975e2bda97f07403bf55177880.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/28fb341bb252258c79e74a3e32d44fd145b7b6af/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="8e1d31656bc9f1889283836e025e6cb703acd38a">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_5637c63c5fb5eb2f855eac80288106af27c7eef9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/0a50967a4b8d0b4d8f131a948a8e0d83fc7f5c1c/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="bd75f9f0296fe220da6d0ad961831b04541c4452">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_289ff1f05d72bcf13feb97892e715bfea3f0515a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/2619bb9bc590c95346a4b6c6f0a0b7e16f169444/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="0d5cbbbfe040201c7569478b70a13b58fd11aab4">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_dc356d5749af637c62dd6435f7fd637f1dd32551.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/690d4ca59dd855d30a63632aa0be135b8cfbc0f3/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c5e6490573cd2cc8018417f60ddd251138b6ed61">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_3c198db7bf9f0d69677ffc8599bd79a8c20de18c.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/a4a17ac5a483343d666b7588be8a65f024439ba7/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="3d13e510077b35fe8e49930a627dd849ad5da0dc">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_d5d5a5e282355cdbeb471c11887c4cb4ecfb3ec5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/d13d94f76ddc3f98a346a63a9bbaf49b46a8416b/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="48532a016bb0dfbe7970c147ce784598a515406b">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_766233e31bf732a138782fa74f04b87736869a09.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/Kevin/.android/build-cache/39b704037618e004ab22e71a71deee68191d7211/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="3d6951cb416ebf8c66a32b9480808ca247b68344">
+        <dex dex="/Users/Kevin/AndroidStudioProjects/SGBusGO/CZ2006-Project/app/build/intermediates/pre-dexed/debug/classes_29cca6f46c9f8925217417fbe60dbfdaac30104a.jar" />
     </item>
 
 </items>

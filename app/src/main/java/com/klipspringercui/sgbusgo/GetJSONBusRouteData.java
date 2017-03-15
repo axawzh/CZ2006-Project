@@ -22,19 +22,23 @@ class GetJSONBusRouteData extends AsyncTask<String, Void, List<BusRoute>> implem
 
     private static final String TAG = "GetJSONBusRouteData";
 
+    private Context mContext;
     private BusRoutesDataAvailableCallable mCallable;
     private String baseURL;
     private boolean transmissionFlag;
     private List<BusRoute> busRoutesList;
+    private boolean processOnBackground;
 
     interface BusRoutesDataAvailableCallable {
         void onBusRouteDataAvailable(List<BusRoute> data, DownloadStatus status);
     }
 
 
-    public GetJSONBusRouteData(BusRoutesDataAvailableCallable mCallable, String baseURL) {
+    public GetJSONBusRouteData(BusRoutesDataAvailableCallable mCallable, Context mContext, String baseURL, boolean mode) {
         this.mCallable = mCallable;
         this.baseURL = baseURL;
+        this.mContext = mContext;
+        this.processOnBackground = mode;
     }
 
     @Override
@@ -92,8 +96,13 @@ class GetJSONBusRouteData extends AsyncTask<String, Void, List<BusRoute>> implem
         Log.d(TAG, "onPostExecute: starts");
         super.onPostExecute(busRoutes);
 
-        if (mCallable != null)
-            mCallable.onBusRouteDataAvailable(this.busRoutesList, DownloadStatus.OK);
+        if (processOnBackground) {
+            BusRoutesDataHandler handler = new BusRoutesDataHandler(mContext);
+            handler.runInSameThread(this.busRoutesList);
+        } else {
+            if (mCallable != null)
+                mCallable.onBusRouteDataAvailable(this.busRoutesList, DownloadStatus.OK);
+        }
         Log.d(TAG, "onPostExecute: ends");
     }
 }

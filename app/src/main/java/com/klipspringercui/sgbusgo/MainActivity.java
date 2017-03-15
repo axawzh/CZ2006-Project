@@ -3,6 +3,7 @@ package com.klipspringercui.sgbusgo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -11,6 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,13 +47,23 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     private static final String BUS_SERVICES_SET = "BUS SERVICES SET";
     private static final String BUS_SERVICES_LIST = "BUS SERVICES LIST";
 
-
     private HashMap<String, BusStop> busStopsMap = null;
     private ArrayList<BusStop> busStopsList = null;
-    private HashSet<String> busServicesSet = null;
     private ArrayList<String> busServicesList = null;
 
-    private boolean force = false;
+    Button btnETA = null;
+    Button btnAA = null;
+    Button btnFC = null;
+
+    Button btnTestUpdate = null;
+    Button btnTestUpload = null;
+    Button btnTestDownload = null;
+    Button btnTestFireDownload = null;
+
+    private boolean[] reloadflags;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,52 +80,137 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             }
         });
 
-        Button ETA_button = (Button) findViewById(R.id.btnETA);
-        ETA_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ETAActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnETA = (Button) findViewById(R.id.btnETA);
+        btnFC = (Button) findViewById(R.id.btnFareCalculator);
+        btnAA = (Button) findViewById(R.id.btnAlightingAlarm);
 
-        Button AlightingAlarm_button = (Button) findViewById(R.id.btnAlightingAlarm);
-        AlightingAlarm_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AlightingAlarmActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnETA.setOnClickListener(mainActivityButtonListener);
+        btnFC.setOnClickListener(mainActivityButtonListener);
+        btnAA.setOnClickListener(mainActivityButtonListener);
 
-        Button FareCalculator_button = (Button) findViewById(R.id.btnFareCalculator);
-        FareCalculator_button.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, FareCalculatorActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnTestUpdate = (Button) findViewById(R.id.btnTestUpdate);
+        btnTestDownload = (Button) findViewById(R.id.btnTestDownload);
+        btnTestUpload = (Button) findViewById(R.id.btnTestUpload);
+        btnTestFireDownload = (Button) findViewById(R.id.btnTestFireDownload);
 
+        btnTestFireDownload.setOnClickListener(testOnClickListener);
+        btnTestDownload.setOnClickListener(testOnClickListener);
+        btnTestUpdate.setOnClickListener(testOnClickListener);
+        btnTestUpload.setOnClickListener(testOnClickListener);
+
+        mAuth = FirebaseAuth.getInstance();
+
+
+        Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show();
+
+        LoadLocalData loadLocalData = new LoadLocalData(getApplicationContext(), this);
+        loadLocalData.execute();
+
+        reloadflags = new boolean[2];
+        reloadflags[0] = false;
+        reloadflags[1] = false;
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInAnonymously", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+    }
+
+    Button.OnClickListener mainActivityButtonListener = new Button.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            switch(id) {
+                case R.id.btnETA:
+                    Intent intentETA = new Intent(MainActivity.this, ETAActivity.class);
+                    startActivity(intentETA);
+                    break;
+                case R.id.btnFareCalculator:
+                    Intent intentFC = new Intent(MainActivity.this, FareCalculatorActivity.class);
+                    startActivity(intentFC);
+                    break;
+                case R.id.btnAlightingAlarm:
+                    Intent intentAA = new Intent(MainActivity.this, AlightingAlarmActivity.class);
+                    startActivity(intentAA);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    Button.OnClickListener testOnClickListener = new Button.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            switch(id) {
+                case R.id.btnTestUpload:
+                    Toast.makeText(MainActivity.this, "Uploading", Toast.LENGTH_SHORT).show();
+                    UploadData uploader = new UploadData(getApplicationContext());
+                    uploader.execute();
+                    Toast.makeText(MainActivity.this, "Upload finishes", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.btnTestDownload:
+                    downloadData(false);
+                    break;
+                case R.id.btnTestUpdate:
+                    downloadData(true);
+                    break;
+                case R.id.btnTestFireDownload:
+                    downloadFirebaseData();
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (force) {
-            Toast.makeText(this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onResume: Downloading Bus Stop Data");
-            GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(this, BUS_STOPS_URL);
-            getJSONBusStopData.execute();
-            Toast.makeText(this, "Downloading Bus Routes Data", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onResume: Downloading Bus Route Data");
-            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
-            getJSONData.execute();
-            force = false;
-            return;
-        }
-        
         this.busServicesList = BusServicesListHolder.getInstance().getData();
         this.busStopsList = BusStopsListHolder.getInstance().getData();
 
@@ -112,13 +219,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             return;
         }
 
-        Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show();
-
-        LoadLocalData loadLocalData = new LoadLocalData(getApplicationContext(), this);
-        loadLocalData.execute();
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,106 +243,72 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         return super.onOptionsItemSelected(item);
     }
 
+    private void downloadData(boolean runOnBackground) {
+        Toast.makeText(MainActivity.this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate: Downloading Bus Stop Data");
+        GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(MainActivity.this, getApplicationContext(), BUS_STOPS_URL, runOnBackground);
+        getJSONBusStopData.execute();
+        Toast.makeText(MainActivity.this, "Downloading Bus Routes Data", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate: Downloading Bus Route Data");
+        GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(MainActivity.this, getApplicationContext(), BUS_ROUTES_URL, runOnBackground);
+        getJSONData.execute();
+    }
+
+    private void downloadFirebaseData() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference busDataRef = storageRef.child("overview/BusData");
+        File busRouteFile = new File(getFilesDir(), BUS_ROUTES_FILENAME);
+        busDataRef.child(BUS_ROUTES_FILENAME).getFile(busRouteFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: download bus route file");
+                FirebaseDataHandler handler = new FirebaseDataHandler(getApplicationContext());
+                handler.execute();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                Log.e(TAG, "onFailure: download failure - bus routes data");
+            }
+        });
+        File busServiceFile = new File(getFilesDir(), BUS_SERVICES_FILENAME);
+        busDataRef.child(BUS_SERVICES_FILENAME).getFile(busServiceFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: download bus service data");
+                reloadLocalData(1);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                Log.e(TAG, "onFailure: download failure - bus service data");
+            }
+        });
+        File busStopFile = new File(getFilesDir(), BUS_STOPS_FILENAME);
+        busDataRef.child(BUS_STOPS_FILENAME).getFile(busStopFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: download bus stop file");
+                reloadLocalData(2);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                Log.e(TAG, "onFailure: download failure - bus stop data");
+            }
+        });
+        Log.d(TAG, "downloadFirebaseData: download complete, loading from files");
+    }
+
     @Override
     public void onBusRouteDataAvailable(List<BusRoute> data, DownloadStatus status) {
-        Log.d(TAG, "onBusRouteDataAvailable: data - " + data);
-        ArrayList<BusGroup> busGroups = new ArrayList<BusGroup>();
-        this.busServicesList = new ArrayList<String>();
-        String currentServiceNo = null;
-        ArrayList<BusStop> currentBusStops = null;
 
-        if (this.busStopsMap == null || this.busStopsMap.size() == 0) {
-            try {
-                Log.d(TAG, "onBusRouteDataAvailable: recovering stored data");
-                FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_MAP_FILENAME);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                this.busStopsMap = (HashMap) ois.readObject();
-                Log.d(TAG, "onBusRouteDataAvailable: successfully recovered stored map data");
-                ois.close();
-                fis.close();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "onBusRouteDataAvailable: File not found -- loading");
-                GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, BUS_STOPS_URL);
-                getJSONData.execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-        for (int i = 0; i < data.size(); i++) {
-            BusRoute currentRoute= data.get(i);
-            if (currentServiceNo == null) {
-                currentServiceNo = currentRoute.getServiceNo();
-                currentBusStops = new ArrayList<BusStop>();
-            }
-            if (!currentRoute.getServiceNo().equalsIgnoreCase(currentServiceNo)) {
-                BusGroup busServiceGroup = new BusGroup(currentServiceNo, currentBusStops);
-                this.busServicesList.add(currentServiceNo);
-                busGroups.add(busServiceGroup);
-                currentServiceNo = currentRoute.getServiceNo();
-                currentBusStops = new ArrayList<BusStop>();
-            }
-            if (currentRoute.getServiceNo().equalsIgnoreCase(currentServiceNo)) {
-                BusStop currentBusStop = this.busStopsMap.get(currentRoute.getBusStopCode());
-                if (currentBusStop == null)
-                    continue;
-                try {
-                    BusStop busStop = new BusStop(currentBusStop, currentRoute.getDistance());
-                    currentBusStops.add(busStop);
-                } catch (NullPointerException e ) {
-                    Log.e(TAG, "onBusRouteDataAvailable: null pointer ");
-                }
-            }
-        }
-
-
-        /**
-         * Writing grouped bus data
-         */
-        Log.d(TAG, "onBusRouteDataAvailable: writing group data");
-        for (int i = 0; i < busGroups.size(); i++) {
-            BusGroup busServiceGroup = busGroups.get(i);
-            String filename = BUS_GROUPS_FILENAME + busServiceGroup.getServiceNo() + ".ser";
-            try {
-
-                FileOutputStream fos = getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(busServiceGroup);
-                oos.close();
-                fos.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        Log.d(TAG, "onBusRouteDataAvailable: writing group data finished: service groups size: " + busGroups.size());
-
-
-        /**
-         * Writing services as list
-         */
-        try {
-            Log.d(TAG, "onBusRouteDataAvailable: writing all service no data");
-            FileOutputStream fos = getApplicationContext().openFileOutput(BUS_SERVICES_FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(busServicesList);
-            oos.close();
-            fos.close();
-            Log.d(TAG, "onBusRouteDataAvailable: writing all service data finished service nos size: " + busServicesList.size());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        BusServicesListHolder.getInstance().setData(busServicesList);
-        BusStopsListHolder.getInstance().setData(busStopsList);
+        BusRoutesDataHandler handler = new BusRoutesDataHandler(getApplicationContext());
+        handler.execute(data);
 
     }
 
@@ -252,14 +319,27 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             Toast.makeText(this, "Data loaded", Toast.LENGTH_SHORT).show();
         } else {
             Log.d(TAG, "onDataLoaded: Local Cached Data Load Failure");
-            Toast.makeText(this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onResume: Downloading Bus Stop Data");
-            GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(this, BUS_STOPS_URL);
-            getJSONBusStopData.execute();
-            Toast.makeText(this, "Downloading Bus Routes Data", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onResume: Downloading Bus Route Data");
-            GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(this, BUS_ROUTES_URL);
-            getJSONData.execute();
+            downloadData(false);
+        }
+    }
+
+    private void reloadLocalData(int flagNo) {
+        switch(flagNo) {
+            case 1:
+                this.reloadflags[0] = true;
+                break;
+            case 2:
+                this.reloadflags[1] = true;
+                break;
+            default:
+                break;
+        }
+        if (reloadflags[0] && reloadflags[1]) {
+            Toast.makeText(this, "Data updated - reloading", Toast.LENGTH_SHORT).show();
+            LoadLocalData loader = new LoadLocalData(getApplicationContext(), this);
+            loader.execute();
+            reloadflags[0] = false;
+            reloadflags[1] = false;
         }
     }
 
@@ -302,5 +382,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             e.printStackTrace();
         }
 
+        BusStopsListHolder.getInstance().setData(busStopsList);
     }
 }

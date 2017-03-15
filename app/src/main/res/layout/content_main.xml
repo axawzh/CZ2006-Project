@@ -10,45 +10,90 @@
     tools:showIn="@layout/activity_main">
 
     <Button
-        android:text="ETA"
-        android:layout_height="wrap_content"
         android:id="@+id/btnETA"
-        tools:layout_editor_absoluteY="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ETA"
+        android:textSize="18sp"
         tools:layout_editor_absoluteX="32dp"
-        android:layout_width="wrap_content" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="32dp" />
 
     <Button
-        android:text="Fare Calculator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/btnFareCalculator"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnETA"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toRightOf="@+id/btnETA"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="16dp" />
-
-    <Button
-        android:text="Alighting Alarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="Fare Calculator"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnETA"
+        app:layout_constraintLeft_toRightOf="@+id/btnETA"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
         android:id="@+id/btnAlightingAlarm"
-        app:layout_constraintLeft_toLeftOf="@+id/btnETA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:text="Alighting Alarm"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="@+id/btnETA"
         app:layout_constraintTop_toBottomOf="@+id/btnETA" />
 
     <Button
-        android:text="My Profile"
+        android:id="@+id/btnProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnProfile"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnAlightingAlarm"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toRightOf="@+id/btnAlightingAlarm"
-        android:layout_marginLeft="8dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="16dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="My Profile"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnAlightingAlarm"
+        app:layout_constraintLeft_toRightOf="@+id/btnAlightingAlarm"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/btnTestUpload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="UPLOAD"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/btnTestUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="4dp"
+        android:text="UPDATE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/btnTestUpload" />
+
+    <Button
+        android:id="@+id/btnTestDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="DOWNLOAD"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/btnTestUpdate"
+        android:layout_marginLeft="4dp" />
+
+    <Button
+        android:id="@+id/btnTestFireDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="FireLoad"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/btnTestDownload"
+        android:layout_marginLeft="4dp" />
 </android.support.constraint.ConstraintLayout>

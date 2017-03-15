@@ -133,6 +133,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
             getJSONFareRateData.execute();
         } else {
             Log.d(TAG, "onResume: successfully recovered fare rate data");
+            this.btnCalculateEnabled = true;
         }
 
     }

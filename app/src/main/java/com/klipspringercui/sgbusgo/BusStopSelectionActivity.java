@@ -49,7 +49,6 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     private BusStopsRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<BusStop> busStops = null;
 
-    private boolean force = false;
     private String searchKeyword;
     private int searchMode = SEARCHMODE_WITHOUTSN;
     private String searchAid;
@@ -102,12 +101,6 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         super.onResume();
         String url = BUS_STOPS_URL;
 
-        if (force) {
-            GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, url);
-            getJSONData.execute();
-            return;
-        }
-
         if (this.searchMode == SEARCHMODE_WITHSN && searchAid != null) {
             String filename = BUS_GROUPS_FILENAME + searchAid + ".ser";
             try {
@@ -151,7 +144,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "onResume: File not found -- loading");
-                GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, url);
+                GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, getApplicationContext(), url, false);
                 getJSONData.execute();
             } catch (IOException e) {
                 e.printStackTrace();
