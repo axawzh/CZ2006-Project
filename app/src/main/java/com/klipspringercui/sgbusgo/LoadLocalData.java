@@ -1,5 +1,6 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -33,6 +34,8 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
 
     private ArrayList<String> busServicesList;
     private ArrayList<BusStop> busStopsList;
+
+    ProgressDialog loadDialog = null;
 
     interface DataLoadCallable {
         void onDataLoaded (int flag);
@@ -98,7 +101,18 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        loadDialog = new ProgressDialog(mContext);
+        loadDialog.setTitle("Loading");
+        loadDialog.setCancelable(false);
+        loadDialog.show();
+    }
+
+    @Override
     protected void onPostExecute(Void aVoid) {
+        loadDialog.dismiss();
         mCallable.onDataLoaded(this.flag);
+
     }
 }

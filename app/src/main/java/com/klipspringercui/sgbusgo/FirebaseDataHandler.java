@@ -1,5 +1,6 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class FirebaseDataHandler extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "FirebaseDataHandler";
     private Context mContext;
+    ProgressDialog processDialog = null;
 
     public FirebaseDataHandler(Context mContext) {
         this.mContext = mContext;
@@ -69,5 +71,22 @@ public class FirebaseDataHandler extends AsyncTask<Void, Void, Void> {
         }
         Log.d(TAG, "doInBackground: writing group data finished: service groups size: " + busGroupsList.size());
         return null;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        processDialog = new ProgressDialog(mContext);
+        processDialog.setTitle("Processing data");
+        processDialog.setMessage("Just a few seconds");
+        processDialog.setCancelable(false);
+        processDialog.show();
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        if (processDialog != null && processDialog.isShowing())
+            processDialog.dismiss();
     }
 }

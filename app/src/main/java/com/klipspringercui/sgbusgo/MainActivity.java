@@ -1,5 +1,6 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -60,9 +61,11 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     Button btnTestDownload = null;
     Button btnTestFireDownload = null;
 
-    private boolean[] reloadflags;
+    private boolean[] reloadFlags;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    ProgressDialog downloadDialog = null;
 
 
     @Override
@@ -103,12 +106,14 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
         Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show();
 
-        LoadLocalData loadLocalData = new LoadLocalData(getApplicationContext(), this);
+
+        LoadLocalData loadLocalData = new LoadLocalData(this, this);
         loadLocalData.execute();
 
-        reloadflags = new boolean[2];
-        reloadflags[0] = false;
-        reloadflags[1] = false;
+        reloadFlags = new boolean[3];
+        reloadFlags[0] = false;
+        reloadFlags[1] = false;
+        reloadFlags[2] = false;
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -229,6 +234,116 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     }
 
     @Override
+    public void onDataLoaded(int flag) {
+        if (flag == LoadLocalData.LOAD_OK) {
+            Log.d(TAG, "onDataLoaded: Local Cached Data Successful Loaded");
+            Toast.makeText(this, "Data loaded", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(TAG, "onDataLoaded: Local Cached Data Load Failure");
+            downloadFirebaseData();
+        }
+    }
+
+    private void downloadData(boolean runOnBackground) {
+
+        Toast.makeText(MainActivity.this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate: Downloading Bus Stop Data");
+        GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(MainActivity.this, getApplicationContext(), BUS_STOPS_URL, runOnBackground);
+        getJSONBusStopData.execute();
+        Toast.makeText(MainActivity.this, "Downloading Bus Routes Data", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate: Downloading Bus Route Data");
+        GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(MainActivity.this, getApplicationContext(), BUS_ROUTES_URL, runOnBackground);
+        getJSONData.execute();
+
+    }
+
+    private void downloadFirebaseData() {
+        this.downloadDialog = new ProgressDialog(this);
+        downloadDialog.setTitle("Downloading...");
+        downloadDialog.setMessage("just a few a few seconds");
+        downloadDialog.setCancelable(false);
+        downloadDialog.show();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference busDataRef = storageRef.child("overview/BusData");
+        File busRouteFile = new File(getFilesDir(), BUS_ROUTES_FILENAME);
+
+        OnFailureListener failureListener = new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: download failure");
+            }
+        };
+
+        busDataRef.child(BUS_ROUTES_FILENAME).getFile(busRouteFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: download bus route file");
+                reloadLocalData(3);
+                if (MainActivity.this.downloadDialog != null && MainActivity.this.downloadDialog.isShowing())
+                    MainActivity.this.downloadDialog.dismiss();
+                FirebaseDataHandler handler = new FirebaseDataHandler(MainActivity.this);
+                handler.execute();
+            }
+        }).addOnFailureListener(failureListener);
+
+        File busServiceFile = new File(getFilesDir(), BUS_SERVICES_FILENAME);
+        busDataRef.child(BUS_SERVICES_FILENAME).getFile(busServiceFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: download bus service data");
+                reloadLocalData(1);
+            }
+        }).addOnFailureListener(failureListener);
+
+        File busStopFile = new File(getFilesDir(), BUS_STOPS_FILENAME);
+        busDataRef.child(BUS_STOPS_FILENAME).getFile(busStopFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: download bus stop file");
+                reloadLocalData(2);
+            }
+        }).addOnFailureListener(failureListener);
+
+        Log.d(TAG, "downloadFirebaseData: download complete, loading from files");
+    }
+
+    @Override
+    public void onBusRouteDataAvailable(List<BusRoute> data, DownloadStatus status) {
+
+        BusRoutesDataHandler handler = new BusRoutesDataHandler(getApplicationContext());
+        handler.execute(data);
+
+    }
+
+    private void reloadLocalData(int flagNo) {
+        switch(flagNo) {
+            case 1:
+                this.reloadFlags[0] = true;
+                break;
+            case 2:
+                this.reloadFlags[1] = true;
+                break;
+            case 3:
+                this.reloadFlags[2] = true;
+                break;
+            default:
+                break;
+        }
+        if (reloadFlags[0] && reloadFlags[1] && reloadFlags[2]) {
+            if (downloadDialog != null && downloadDialog.isShowing())
+                downloadDialog.dismiss();
+            Toast.makeText(this, "Data updated - reloading", Toast.LENGTH_SHORT).show();
+            LoadLocalData loader = new LoadLocalData(this, this);
+            loader.execute();
+            reloadFlags[0] = false;
+            reloadFlags[1] = false;
+            reloadFlags[2] = false;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -241,106 +356,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void downloadData(boolean runOnBackground) {
-        Toast.makeText(MainActivity.this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onCreate: Downloading Bus Stop Data");
-        GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(MainActivity.this, getApplicationContext(), BUS_STOPS_URL, runOnBackground);
-        getJSONBusStopData.execute();
-        Toast.makeText(MainActivity.this, "Downloading Bus Routes Data", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onCreate: Downloading Bus Route Data");
-        GetJSONBusRouteData getJSONData = new GetJSONBusRouteData(MainActivity.this, getApplicationContext(), BUS_ROUTES_URL, runOnBackground);
-        getJSONData.execute();
-    }
-
-    private void downloadFirebaseData() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        StorageReference busDataRef = storageRef.child("overview/BusData");
-        File busRouteFile = new File(getFilesDir(), BUS_ROUTES_FILENAME);
-        busDataRef.child(BUS_ROUTES_FILENAME).getFile(busRouteFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG, "onSuccess: download bus route file");
-                FirebaseDataHandler handler = new FirebaseDataHandler(getApplicationContext());
-                handler.execute();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Log.e(TAG, "onFailure: download failure - bus routes data");
-            }
-        });
-        File busServiceFile = new File(getFilesDir(), BUS_SERVICES_FILENAME);
-        busDataRef.child(BUS_SERVICES_FILENAME).getFile(busServiceFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG, "onSuccess: download bus service data");
-                reloadLocalData(1);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Log.e(TAG, "onFailure: download failure - bus service data");
-            }
-        });
-        File busStopFile = new File(getFilesDir(), BUS_STOPS_FILENAME);
-        busDataRef.child(BUS_STOPS_FILENAME).getFile(busStopFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG, "onSuccess: download bus stop file");
-                reloadLocalData(2);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Log.e(TAG, "onFailure: download failure - bus stop data");
-            }
-        });
-        Log.d(TAG, "downloadFirebaseData: download complete, loading from files");
-    }
-
-    @Override
-    public void onBusRouteDataAvailable(List<BusRoute> data, DownloadStatus status) {
-
-        BusRoutesDataHandler handler = new BusRoutesDataHandler(getApplicationContext());
-        handler.execute(data);
-
-    }
-
-    @Override
-    public void onDataLoaded(int flag) {
-        if (flag == LoadLocalData.LOAD_OK) {
-            Log.d(TAG, "onDataLoaded: Local Cached Data Successful Loaded");
-            Toast.makeText(this, "Data loaded", Toast.LENGTH_SHORT).show();
-        } else {
-            Log.d(TAG, "onDataLoaded: Local Cached Data Load Failure");
-            downloadData(false);
-        }
-    }
-
-    private void reloadLocalData(int flagNo) {
-        switch(flagNo) {
-            case 1:
-                this.reloadflags[0] = true;
-                break;
-            case 2:
-                this.reloadflags[1] = true;
-                break;
-            default:
-                break;
-        }
-        if (reloadflags[0] && reloadflags[1]) {
-            Toast.makeText(this, "Data updated - reloading", Toast.LENGTH_SHORT).show();
-            LoadLocalData loader = new LoadLocalData(getApplicationContext(), this);
-            loader.execute();
-            reloadflags[0] = false;
-            reloadflags[1] = false;
-        }
     }
 
     @Override

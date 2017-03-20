@@ -32,29 +32,10 @@ import static android.content.ContentValues.TAG;
 public class DialogDisplayETA extends DialogFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ETAD_BUSSTOP = "ETAD_BUSSTOP";
-//    private static final String ETAD_BUSSERVICENO = "ETAD_BUSSERVICENO";
-//    private static final String ETAD_NEXTETA = "ETAD_NEXTETA";
-//    private static final String ETAD_SUBETA = "ETAD_SUBETA";
-//    private static final String ETAD_SUBTETA = "ETAD_SUBTETA";
     private static final String TAG = "DialogDisplayETA";
-
     private static final String ETAD_ITEMNUM = "ETAD_ITEMNUM";
     private static final String ETAD_ITEM = "ETAD_ITEM";
     private static final String ETAD_BUSSTOP = "ETAD_BUSSTOP";
-
-    // TODO: Rename and change types of parameters
-//    private String serviceNo;
-//    private String busStop;
-//    private String nextETA;
-//    private String subETA;
-//    private String sub3ETA;
-//
-//    TextView txtBusStop = null;
-//    TextView txtBusServiceNo = null;
-//    TextView txtNextETA = null;
-//    TextView txtSubETA = null;
-//    TextView txtSub3ETA = null;
 
     private List<ETAItem> etaList;
     private BusStop busStop;
@@ -92,7 +73,7 @@ public class DialogDisplayETA extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle bundle = getArguments();
-            etaList = new ArrayList<ETAItem>();
+            etaList = new ArrayList<>();
             busStop = (BusStop) bundle.getSerializable(ETAD_BUSSTOP);
             int itemCount = bundle.getInt(ETAD_ITEMNUM);
             for (int i = 0; i < itemCount; i++) {
@@ -118,17 +99,7 @@ public class DialogDisplayETA extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        txtBusServiceNo = (TextView) view.findViewById(R.id.txtETADServiceNo);
-//        txtBusStop = (TextView) view.findViewById(R.id.txtETADBusStop);
-//        txtNextETA = (TextView) view.findViewById(R.id.txtETADNext);
-//        txtSubETA = (TextView) view.findViewById(R.id.txtETADSub);
-//        txtSub3ETA = (TextView) view.findViewById(R.id.txtETADSub3);
-//
-//        txtBusServiceNo.setText(this.serviceNo);
-//        txtBusStop.setText(this.busStop);
-//        txtNextETA.setText(this.nextETA);
-//        txtSubETA.setText(this.subETA);
-//        txtSub3ETA.setText(this.sub3ETA);
+
         RecyclerView etadRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_ETAD);
         etadRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewAdapter = new ETADRecyclerViewAdapter(this.etaList, this.busStop);
