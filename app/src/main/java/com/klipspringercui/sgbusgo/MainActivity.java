@@ -415,6 +415,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
             e.printStackTrace();
         }
 
+
         BusStopsListHolder.getInstance().setData(busStopsList);
     }
 
