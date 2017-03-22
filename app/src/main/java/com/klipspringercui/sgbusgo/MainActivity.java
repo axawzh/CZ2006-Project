@@ -55,6 +55,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     Button btnETA = null;
     Button btnAA = null;
     Button btnFC = null;
+    Button btnMP = null;
 
     Button btnTestUpdate = null;
     Button btnTestUpload = null;

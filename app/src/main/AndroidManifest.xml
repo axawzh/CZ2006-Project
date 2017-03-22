@@ -57,7 +57,25 @@
             android:name=".AlightingAlarmActivity"
             android:label="@string/title_activity_alighting_alarm"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BusServiceSelectionActivity"></activity>
+        <activity android:name=".BusServiceSelectionActivity" />
+        <activity
+            android:name=".MyProfileActivity"
+            android:label="@string/title_activity_my_profile"
+            android:parentActivityName=".BaseActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.klipspringercui.sgbusgo.BaseActivity" />
+        </activity>
+        <activity
+            android:name=".AddFrequentTripActivity"
+            android:label="@string/title_activity_add_frequent_trip"
+            android:parentActivityName=".BaseActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.klipspringercui.sgbusgo.BaseActivity" />
+        </activity>
     </application>
 
 </manifest>
