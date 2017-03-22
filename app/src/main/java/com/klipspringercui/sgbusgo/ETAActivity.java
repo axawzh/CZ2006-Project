@@ -1,13 +1,16 @@
 package com.klipspringercui.sgbusgo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.app.FragmentTransaction;
 import android.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -17,18 +20,9 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import static com.klipspringercui.sgbusgo.BaseActivity.ETA_URL;
-import static com.klipspringercui.sgbusgo.BaseActivity.REQUEST_BUSSERVICE;
-import static com.klipspringercui.sgbusgo.BaseActivity.REQUEST_BUSSTOP;
-import static com.klipspringercui.sgbusgo.BaseActivity.SEARCHMODE_WITHOUTSN;
-import static com.klipspringercui.sgbusgo.BaseActivity.SEARCHMODE_WITHSN;
-import static com.klipspringercui.sgbusgo.BaseActivity.SEARCH_AID;
-import static com.klipspringercui.sgbusgo.BaseActivity.SEARCH_MODE;
-import static com.klipspringercui.sgbusgo.R.id.btnSelectBusStop;
-import static com.klipspringercui.sgbusgo.R.id.txtSelectedBusStop;
-import static com.klipspringercui.sgbusgo.R.id.txtServiceNo;
 
-public class ETAActivity extends AppCompatActivity implements GetJSONETAData.ETADataAvailableCallable {
+public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataAvailableCallable,
+                                                                DialogDisplayETA.OnFragmentInteractionListener {
 
     private static final String TAG = "ETAActivity";
     static final String ETA_SEARCH_MODE = "ETA SEARCH MODE";
@@ -48,6 +42,7 @@ public class ETAActivity extends AppCompatActivity implements GetJSONETAData.ETA
     Button buttonGetETA = null;
 
     private long btnLastClickTime = 0;
+
 
 
     @Override
@@ -77,7 +72,7 @@ public class ETAActivity extends AppCompatActivity implements GetJSONETAData.ETA
         buttonGetETA = (Button) findViewById(R.id.btnGetETA);
         buttonGetETA.setOnClickListener(getETAOnClickListener);
 
-
+        cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
 
@@ -109,12 +104,20 @@ public class ETAActivity extends AppCompatActivity implements GetJSONETAData.ETA
     Button.OnClickListener getETAOnClickListener = new Button.OnClickListener(){
         @Override
         public void onClick(View v) {
-            if (selectedBusStop == null)
+            if (selectedBusStop == null) {
+                Toast.makeText(ETAActivity.this, "Please select a bus stop (and optionally a bus service no)", Toast.LENGTH_SHORT).show();
                 return;
-            if (SystemClock.elapsedRealtime() - btnLastClickTime < 1000){
+            }
+            if (SystemClock.elapsedRealtime() - btnLastClickTime < 500){
                 return;
             }
             btnLastClickTime = SystemClock.elapsedRealtime();
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
+            if (!isConnected) {
+                showConnectionDialog();
+                return;
+            }
             GetJSONETAData getJSONETAData = new GetJSONETAData(ETAActivity.this, ETA_URL);
             if (selectedBusService == null) {
                 getJSONETAData.execute(selectedBusStop.getBusStopCode());
@@ -166,5 +169,17 @@ public class ETAActivity extends AppCompatActivity implements GetJSONETAData.ETA
         DialogFragment etaDialog = DialogDisplayETA.newInstance(data, busStop);
         etaDialog.show(ft, "dialog");
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dismissConnectionDialog();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
 
 }

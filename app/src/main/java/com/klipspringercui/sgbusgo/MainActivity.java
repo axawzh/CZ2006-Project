@@ -3,6 +3,8 @@ package com.klipspringercui.sgbusgo;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,15 +28,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -66,7 +65,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     ProgressDialog downloadDialog = null;
-
+    ProgressDialog loadingDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,10 +102,15 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
         mAuth = FirebaseAuth.getInstance();
 
+        cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
+
 
         Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show();
 
 
+        showLoadingDialog();
         LoadLocalData loadLocalData = new LoadLocalData(this, this);
         loadLocalData.execute();
 
@@ -210,6 +214,9 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        dismissDownloadDialog();
+        dismissLoadingDialog();
+        dismissConnectionDialog();
     }
 
     @Override
@@ -235,6 +242,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
     @Override
     public void onDataLoaded(int flag) {
+        dismissLoadingDialog();
         if (flag == LoadLocalData.LOAD_OK) {
             Log.d(TAG, "onDataLoaded: Local Cached Data Successful Loaded");
             Toast.makeText(this, "Data loaded", Toast.LENGTH_SHORT).show();
@@ -246,6 +254,12 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
     private void downloadData(boolean runOnBackground) {
 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
+        if (!isConnected) {
+            showConnectionDialog();
+            return;
+        }
         Toast.makeText(MainActivity.this, "Downloading Bus Stop Data", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onCreate: Downloading Bus Stop Data");
         GetJSONBusStopData getJSONBusStopData = new GetJSONBusStopData(MainActivity.this, getApplicationContext(), BUS_STOPS_URL, runOnBackground);
@@ -258,11 +272,15 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     }
 
     private void downloadFirebaseData() {
-        this.downloadDialog = new ProgressDialog(this);
-        downloadDialog.setTitle("Downloading...");
-        downloadDialog.setMessage("just a few a few seconds");
-        downloadDialog.setCancelable(false);
-        downloadDialog.show();
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
+        if (!isConnected) {
+            showConnectionDialog();
+            return;
+        }
+
+        showDownloadDialog();
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -332,9 +350,9 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
                 break;
         }
         if (reloadFlags[0] && reloadFlags[1] && reloadFlags[2]) {
-            if (downloadDialog != null && downloadDialog.isShowing())
-                downloadDialog.dismiss();
+            dismissDownloadDialog();
             Toast.makeText(this, "Data updated - reloading", Toast.LENGTH_SHORT).show();
+            showLoadingDialog();
             LoadLocalData loader = new LoadLocalData(this, this);
             loader.execute();
             reloadFlags[0] = false;
@@ -398,5 +416,34 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         }
 
         BusStopsListHolder.getInstance().setData(busStopsList);
+    }
+
+    private void showLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing())
+            return;
+        loadingDialog = new ProgressDialog(this);
+        loadingDialog.setTitle("Loading");
+        loadingDialog.setCancelable(false);
+        loadingDialog.show();
+    }
+
+    private void dismissLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing())
+            loadingDialog.dismiss();
+    }
+
+    private void showDownloadDialog() {
+        if (downloadDialog != null && downloadDialog.isShowing())
+            return;
+        downloadDialog = new ProgressDialog(this);
+        downloadDialog.setTitle("Downloading...");
+        downloadDialog.setMessage("just a few a few seconds");
+        downloadDialog.setCancelable(false);
+        downloadDialog.show();
+    }
+
+    private void dismissDownloadDialog() {
+        if (downloadDialog != null && downloadDialog.isShowing())
+            downloadDialog.dismiss();
     }
 }

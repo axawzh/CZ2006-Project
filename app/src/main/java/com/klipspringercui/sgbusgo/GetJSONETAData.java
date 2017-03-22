@@ -1,6 +1,5 @@
 package com.klipspringercui.sgbusgo;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -9,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +76,7 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
     public void onDownloadComplete(String data, DownloadStatus status) {
 
         if (status == DownloadStatus.OK) {
-            this.etas = new ArrayList<ETAItem>();
+            this.etas = new ArrayList<>();
 
             try {
                 JSONObject jsonData = new JSONObject(data);
@@ -89,6 +87,7 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
                     String service = jsonETAItem.getString("ServiceNo");
                     JSONObject jsonNext = jsonETAItem.getJSONObject("NextBus");
                     String arrival1 = jsonNext.getString("EstimatedArrival");
+
                     JSONObject jsonSub = jsonETAItem.getJSONObject("SubsequentBus");
                     String arrival2 = jsonSub.getString("EstimatedArrival");
                     JSONObject jsonSub3 = jsonETAItem.getJSONObject("SubsequentBus3");
