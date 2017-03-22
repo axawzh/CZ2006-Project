@@ -1,5 +1,6 @@
 package com.klipspringercui.sgbusgo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,7 +28,6 @@ public class MyProfileActivity extends BaseActivity {
                         .setAction("Action", null).show();
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         buttonAddFrequentTrip = (Button) findViewById(R.id.btnAddFrequentTrip);
         buttonAddFrequentTrip.setOnClickListener(addFrequentTripOnClickListenser);
@@ -36,7 +36,14 @@ public class MyProfileActivity extends BaseActivity {
     Button.OnClickListener addFrequentTripOnClickListenser = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            Intent intent = new Intent(MyProfileActivity.this, AddFrequentTripActivity.class);
+            startActivity(intent);
         }
+    };
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

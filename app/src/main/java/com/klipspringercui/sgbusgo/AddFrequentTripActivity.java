@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
 
+
 public class AddFrequentTripActivity extends BaseActivity {
 
     //TODO: add dialog to prompt user to complete form if he/she did not do so
@@ -30,7 +31,7 @@ public class AddFrequentTripActivity extends BaseActivity {
 
     private static final String TAG = "AddFrequentTripActivity";
 
-    static final String FT_SELECTED_STARTINGBUSSTOP = "FT SELECTED STARTING BUS STOP";
+    static final String FT_SELECTED_BUSSTOP = "FT SELECTED BUS STOP";
     static final String FT_SELECTED_ALIGHTINGBUSSTOP = "FT SELECTED ALIGHTING BUS STOP";
     static final String FT_SELECTED_BUSSERVICENO = "FT SELECTED BUS SERVICE NO";
     static final String FT_SELECTED_TIME = "FT SELECTED TIME";
@@ -157,24 +158,54 @@ public class AddFrequentTripActivity extends BaseActivity {
                 return;
             }
 
+            FrequentTrip ft = new FrequentTrip(selectedStartingBusStop, selectedAlightingBusStop, selectedBusService, pickerHour, pickerMin);
+
             try {
                 Log.d(TAG, "AddFrequentTrip: writing data");
                 FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(data);
+                oos.writeObject(ft);
                 oos.close();
                 fos.close();
                 Log.d(TAG, "onBusStopDataAvailable: writing data finished");
-                Log.d(TAG, "onBusStopDataAvailable: data size: " + data.size());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(AddFrequentTripActivity.this, BusServiceSelectionActivity.class);
-            startActivityForResult(intent, REQUEST_BUSSERVICE);
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            if (bundle != null) {
+                switch(requestCode) {
+                    case REQUEST_BUSSTOP:
+                        selectedStartingBusStop = (BusStop) bundle.getSerializable(FT_SELECTED_BUSSTOP);
+                        textSelectStartingBusStop.setText(selectedStartingBusStop.getDescription());
+                        break;
+                    case REQUEST_BUSSTOP_B:
+                        selectedAlightingBusStop = (BusStop) bundle.getSerializable(FT_SELECTED_BUSSTOP);
+                        textSelectAlightingBusStop.setText(selectedAlightingBusStop.getDescription());
+                        break;
+                    case REQUEST_BUSSERVICE:
+                        selectedBusService = bundle.getString(FT_SELECTED_BUSSERVICENO);
+                        textSelectBusService.setText(selectedBusService);
+                        selectedStartingBusStop = null;
+                        selectedAlightingBusStop = null;
+                        btnBusStopEnabled = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+
 
 
 

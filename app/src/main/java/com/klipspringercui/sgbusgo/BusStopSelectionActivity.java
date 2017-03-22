@@ -259,6 +259,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
             case "FareCalculatorActivity":
                 bundle.putSerializable(FareCalculatorActivity.FC_SELECTED_BUSSTOP, selected);
                 break;
+            case "AddFrequentTripActivity":
+                bundle.putSerializable(AddFrequentTripActivity.FT_SELECTED_BUSSTOP, selected);
+                break;
             default:
                 break;
         }
