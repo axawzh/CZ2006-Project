@@ -17,10 +17,13 @@ import android.app.FragmentTransaction;
 import android.widget.Toast;
 import android.widget.TimePicker;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -58,6 +61,8 @@ public class AddFrequentTripActivity extends BaseActivity {
 
     private int pickerHour = 0;
     private int pickerMin = 0;
+
+    private ArrayList<FrequentTrip> frequentTripArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,15 +167,34 @@ public class AddFrequentTripActivity extends BaseActivity {
 
             try {
                 Log.d(TAG, "AddFrequentTrip: writing data");
+                FileInputStream fis = getApplicationContext().openFileInput(FREQUENT_TRIP_FILENAME);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                frequentTripArrayList = (ArrayList) ois.readObject();
+                frequentTripArrayList.add(ft);
+                ois.close();
+                fis.close();
                 FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(ft);
+                oos.writeObject(frequentTripArrayList);
                 oos.close();
                 fos.close();
-                Log.d(TAG, "onBusStopDataAvailable: writing data finished");
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                try {
+                    Log.d(TAG, "AddFrequentTrip: File not found, create new file");
+                    FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);
+                    oos.writeObject(new ArrayList<FrequentTrip>().add(ft));
+                    oos.close();
+                    fos.close();
+                } catch (IOException n) {
+                    n.printStackTrace();
+                }
+
             } catch (IOException e) {
+                Log.d(TAG, "AddFrequentTrip: IO Exception");
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                Log.d(TAG, "AddFrequentTrip: ClassNotFoundException");
                 e.printStackTrace();
             }
         }
