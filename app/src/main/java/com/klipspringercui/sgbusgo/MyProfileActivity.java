@@ -67,20 +67,21 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
         listFrequentTrip = (ListView) findViewById(R.id.listFrequentTrip);
 
         // initiate frequent trip file
-        Log.d(TAG, "Test: starting test");
-        try {
-            FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, MODE_PRIVATE);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.close();
-            fos.close();
-            Log.d(TAG, "Test: passed");
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "Test: FileNotFound Exception");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.d(TAG, "Test: IO Exception");
-            e.printStackTrace();
-        }
+//        Log.d(TAG, "Test: starting test");
+//
+//        try {
+//            FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, MODE_PRIVATE);
+//            ObjectOutputStream oos = new ObjectOutputStream(fos);
+//            oos.close();
+//            fos.close();
+//            Log.d(TAG, "Test: passed");
+//        } catch (FileNotFoundException e) {
+//            Log.d(TAG, "Test: FileNotFound Exception");
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            Log.d(TAG, "Test: IO Exception");
+//            e.printStackTrace();
+//        }
 
         frequentTripArrayList = getSavedFrequentTripList(FREQUENT_TRIP_FILENAME);
         listViewAdapter = new FrequentTripListAdapter(this, frequentTripArrayList);
@@ -146,7 +147,23 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
             ois.close();
             fis.close();
             loadFlag = LOAD_OK;
-        } catch (EOFException e) {
+        } catch (FileNotFoundException e) {
+            // No exist file
+            try {
+                FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, MODE_PRIVATE);
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.close();
+                fos.close();
+                Log.d(TAG, "New file created");
+            } catch (FileNotFoundException n) {
+                Log.d(TAG, "Test: FileNotFound Exception");
+                n.printStackTrace();
+            } catch (IOException n) {
+                Log.d(TAG, "Test: IO Exception");
+                n.printStackTrace();
+            }
+        }
+        catch (EOFException e) {
             Log.d(TAG, "MyProfile: EOF Exception");
             e.printStackTrace();
         }
