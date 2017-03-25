@@ -5,12 +5,23 @@
     android:layout_height="match_parent"
     android:baselineAligned="false">
 
-    <fragment
+    <LinearLayout
         android:name="layout.UserAccountFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/user_account_icon"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/noaccount"
+            android:adjustViewBounds="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +35,8 @@
             android:text="My Frequent Trip"
             android:layout_weight="4"
             android:textSize="28sp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textStyle="bold"/>
 
         <Button
             android:layout_width="0dp"
@@ -42,7 +54,14 @@
         android:layout_height="0dp"
         android:layout_weight="3"
         android:id="@+id/listFrequentTrip">
-
     </ListView>
+
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="3"-->
+        <!--android:text="No Saved Frequent Trip"-->
+        <!--android:textSize="28sp"-->
+        <!--android:id="@+id/emptyListView"/>-->
 
 </LinearLayout>

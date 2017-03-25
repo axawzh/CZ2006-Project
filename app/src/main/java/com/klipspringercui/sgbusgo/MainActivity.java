@@ -87,10 +87,12 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         btnETA = (Button) findViewById(R.id.btnETA);
         btnFC = (Button) findViewById(R.id.btnFareCalculator);
         btnAA = (Button) findViewById(R.id.btnAlightingAlarm);
+        btnMP = (Button) findViewById(R.id.btnProfile);
 
         btnETA.setOnClickListener(mainActivityButtonListener);
         btnFC.setOnClickListener(mainActivityButtonListener);
         btnAA.setOnClickListener(mainActivityButtonListener);
+        btnMP.setOnClickListener(mainActivityButtonListener);
 
         btnTestUpdate = (Button) findViewById(R.id.btnTestUpdate);
         btnTestDownload = (Button) findViewById(R.id.btnTestDownload);
@@ -167,6 +169,10 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
                 case R.id.btnAlightingAlarm:
                     Intent intentAA = new Intent(MainActivity.this, AlightingAlarmActivity.class);
                     startActivity(intentAA);
+                    break;
+                case R.id.btnProfile:
+                    Intent intentMP = new Intent(MainActivity.this, MyProfileActivity.class);
+                    startActivity(intentMP);
                     break;
                 default:
                     break;

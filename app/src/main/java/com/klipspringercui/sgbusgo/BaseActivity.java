@@ -29,6 +29,7 @@ public class BaseActivity extends AppCompatActivity {
     static final int REQUEST_BUSSERVICE = 2;
     static final int REQUEST_BUSSTOP_B = 3;
     static final int REQUEST_SETTIME = 4;
+    static final int REQUEST_ADDFREQUENTTRIP = 5;
     static final int SEARCHMODE_WITHSN = 1;
     static final int SEARCHMODE_WITHOUTSN = 2;
 

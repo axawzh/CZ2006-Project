@@ -1,5 +1,6 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.app.FragmentTransaction;
 import android.widget.Toast;
 import android.widget.TimePicker;
 
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -59,8 +61,10 @@ public class AddFrequentTripActivity extends BaseActivity {
     boolean btnBusStopEnabled = false;
     boolean btnSaveTripEnabled = false;
 
+    private TimePicker timePicker;
     private int pickerHour = 0;
     private int pickerMin = 0;
+    static final int TIME_PICKER_DIALOG_ID = 1;
 
     private ArrayList<FrequentTrip> frequentTripArrayList;
 
@@ -88,7 +92,7 @@ public class AddFrequentTripActivity extends BaseActivity {
         textSelectAlightingBusStop = (TextView) findViewById(R.id.txtFTAlightingSelectedBusStop);
         buttonSelectAlightingBusStop.setOnClickListener(busStopOnClickListener);
 
-        buttonSelectAlightingBusStop = (Button) findViewById(R.id.btnFTSelectBusService);
+        buttonSelectBusService = (Button) findViewById(R.id.btnFTSelectBusService);
         textSelectBusService = (TextView) findViewById(R.id.txtFTSelectedBusService);
         buttonSelectBusService.setOnClickListener(busServiceOnClickListener);
 
@@ -121,7 +125,6 @@ public class AddFrequentTripActivity extends BaseActivity {
         }
     };
 
-
     Button.OnClickListener busServiceOnClickListener = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -133,22 +136,45 @@ public class AddFrequentTripActivity extends BaseActivity {
     Button.OnClickListener SetTimeOnClickListener = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
+            showDialog(TIME_PICKER_DIALOG_ID);
             Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
-            TimePickerDialog tp = new TimePickerDialog(AddFrequentTripActivity.this, new TimePickerDialog.OnTimeSetListener(){
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    pickerHour = hourOfDay;
-                    pickerMin = minute;
-                }
-            }, hour, minute, false);
-
-            textSetTime.setText("Start Trip at " + pickerHour + ":" + pickerMin);
+            pickerHour = c.get(Calendar.HOUR_OF_DAY);
+            pickerMin = c.get(Calendar.MINUTE);
 
             btnSaveTripEnabled = true;
         }
+    };
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case TIME_PICKER_DIALOG_ID:
+                // set time picker as current time
+                return new TimePickerDialog(this,
+                        timePickerListener, pickerHour, pickerMin, false);
+
+        }
+        return null;
+    }
+
+    private TimePickerDialog.OnTimeSetListener timePickerListener =
+            new TimePickerDialog.OnTimeSetListener() {
+                public void onTimeSet(TimePicker view, int selectedHour,
+                                      int selectedMinute) {
+                    pickerHour = selectedHour;
+                    pickerMin = selectedMinute;
+
+                    // set current time into textview
+                    textSetTime.setText(new StringBuilder().append(pad(pickerHour))
+                            .append(":").append(pad(pickerMin)));
+                }
+    };
+
+    private static String pad(int c) {
+        if (c >= 10)
+            return String.valueOf(c);
+        else
+            return "0" + String.valueOf(c);
     };
 
     Button.OnClickListener SaveTripOnClickListener = new Button.OnClickListener() {
@@ -162,40 +188,61 @@ public class AddFrequentTripActivity extends BaseActivity {
                 Toast.makeText(AddFrequentTripActivity.this, "Please Select Starting/Alighting Bus Stop", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            FrequentTrip ft = new FrequentTrip(selectedStartingBusStop, selectedAlightingBusStop, selectedBusService, pickerHour, pickerMin);
+            FrequentTrip ft = new FrequentTrip(selectedStartingBusStop, selectedAlightingBusStop, selectedBusService, pickerHour, pickerMin,(int) System.currentTimeMillis());
 
             try {
+                // Save all frequent trips into one ArrayList, and save this ArrayList
+                // into local file
                 Log.d(TAG, "AddFrequentTrip: writing data");
+
+                // Read from file to check if there are existing saved trips
+                // If yes, append the new trip to the arraylist and write back
+                // If no, create a new arraylist and save to file
                 FileInputStream fis = getApplicationContext().openFileInput(FREQUENT_TRIP_FILENAME);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 frequentTripArrayList = (ArrayList) ois.readObject();
-                frequentTripArrayList.add(ft);
                 ois.close();
                 fis.close();
+                frequentTripArrayList.add(ft);
                 FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(frequentTripArrayList);
                 oos.close();
                 fos.close();
-            } catch (FileNotFoundException e) {
+                setResult(RESULT_OK);
+                finish();
+            } catch (EOFException e){
+                // If no frequent trip record. i.e. no saved file.
+                Log.d(TAG, "AddFrequentTrip: EOF Exception, writing new entry");
                 try {
-                    Log.d(TAG, "AddFrequentTrip: File not found, create new file");
                     FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                     ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(new ArrayList<FrequentTrip>().add(ft));
+                    ArrayList<FrequentTrip> temp = new ArrayList<FrequentTrip>();
+                    temp.add(ft);
+                    oos.writeObject(temp);
+                    Log.d(TAG, "AddFrequentTrip: EOF Exception, writing ft: " + ft.getClass());
                     oos.close();
                     fos.close();
+                    setResult(RESULT_OK);
+                    Log.d(TAG, "AddFrequentTrip: EOF Exception -> RESULT_OK");
+                    finish();
                 } catch (IOException n) {
+                    Log.d(TAG, "AddFrequentTrip: IO Exception");
                     n.printStackTrace();
+                    setResult(RESULT_CANCELED);
                 }
-
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "AddFrequentTrip: FileNotFound Exception");
+                e.printStackTrace();
+                setResult(RESULT_CANCELED);
             } catch (IOException e) {
                 Log.d(TAG, "AddFrequentTrip: IO Exception");
                 e.printStackTrace();
+                setResult(RESULT_CANCELED);
             } catch (ClassNotFoundException e) {
                 Log.d(TAG, "AddFrequentTrip: ClassNotFoundException");
                 e.printStackTrace();
+                setResult(RESULT_CANCELED);
             }
         }
     };
@@ -228,6 +275,8 @@ public class AddFrequentTripActivity extends BaseActivity {
             }
         }
     }
+
+
 
 
 
