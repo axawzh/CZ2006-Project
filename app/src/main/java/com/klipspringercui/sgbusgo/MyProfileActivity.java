@@ -1,13 +1,20 @@
 package com.klipspringercui.sgbusgo;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,9 +29,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyProfileActivity extends BaseActivity {
+public class MyProfileActivity extends BaseActivity implements FragmentFrequentTripDetail.OnFragmentInteractionListener{
 
     private static final String TAG = "MyProfileActivity";
+    private static final String TITLE = "My Profile";
 
     static final int LOAD_OK = 0;
     static final int LOAD_FAIL = 1;
@@ -77,13 +85,11 @@ public class MyProfileActivity extends BaseActivity {
         frequentTripArrayList = getSavedFrequentTripList(FREQUENT_TRIP_FILENAME);
         listViewAdapter = new FrequentTripListAdapter(this, frequentTripArrayList);
         listFrequentTrip.setAdapter(listViewAdapter);
+        listFrequentTrip.setOnItemClickListener(listFrequentTripOnItemClickListener);
 
 //        if (loadFlag == LOAD_FAIL) {
 //            listFrequentTrip.setEmptyView(findViewById(R.id.emptyListView));
 //        }
-
-
-
     }
 
     Button.OnClickListener addFrequentTripOnClickListenser = new View.OnClickListener() {
@@ -94,11 +100,32 @@ public class MyProfileActivity extends BaseActivity {
         }
     };
 
+    AdapterView.OnItemClickListener listFrequentTripOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            FrequentTrip temp = (FrequentTrip) listFrequentTrip.getItemAtPosition(position);
+            Log.d(TAG, "getItemAtPosition temp id: " + temp.getId());
+            Log.d(TAG, "getItemAtPosition temp Alighting Bus Stop: " + temp.getAlightingBusStop().getDescription());
+
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentFrequentTripDetail frequentTripDetail = FragmentFrequentTripDetail.newInstance(temp);
+            frequentTripDetail.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    Log.d(TAG, "dialog dismissed, update ListView");
+                    listViewAdapter.clear();
+                    listViewAdapter.addAll(getSavedFrequentTripList(FREQUENT_TRIP_FILENAME));
+                }
+            });
+            frequentTripDetail.show(ft, "dialog");
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ADDFREQUENTTRIP && resultCode == RESULT_OK) {
-            Log.d(TAG, "notifyDataSetChanged()");
+            Log.d(TAG, "update ListView");
             listViewAdapter.clear();
             listViewAdapter.addAll(getSavedFrequentTripList(FREQUENT_TRIP_FILENAME));
             //listViewAdapter.notifyDataSetChanged();
@@ -133,6 +160,22 @@ public class MyProfileActivity extends BaseActivity {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportActionBar().setTitle(TITLE);
+        listViewAdapter.clear();
+        listViewAdapter.addAll(getSavedFrequentTripList(FREQUENT_TRIP_FILENAME));
+    }
+
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
+    public void onFragmentInteraction(FrequentTrip item) {
+
     }
 
 }

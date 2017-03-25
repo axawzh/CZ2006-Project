@@ -44,7 +44,9 @@ class FrequentTrip implements Serializable {
     }
 
     public String getTime() {
-        String time = Integer.toString(hour) + ":" + Integer.toString(minute);
+        StringBuilder sb = new StringBuilder().append(pad(hour))
+                .append(":").append(pad(minute));
+        String time = sb.toString();
         return time;
     }
 
@@ -63,4 +65,11 @@ class FrequentTrip implements Serializable {
                 ", id=" + id +
                 '}';
     }
+
+    private static String pad(int c) {
+        if (c >= 10)
+            return String.valueOf(c);
+        else
+            return "0" + String.valueOf(c);
+    };
 }

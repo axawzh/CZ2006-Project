@@ -22,6 +22,7 @@ public class BaseActivity extends AppCompatActivity {
     static final String BUS_STOPS_MAP_FILENAME = "bus_stops_map.ser";
     static final String BUS_ROUTES_FILENAME = "bus_route_group.ser";
     static final String FREQUENT_TRIP_FILENAME = "frequent_trip.ser";
+    static final String ACTIVATED_FREQUENT_TRIP_FILENAME = "activated_frequent_trip.ser";
 
     static final String SEARCH_MODE = "BUS_STOP_SEARCH_MODE";
     static final String SEARCH_AID = "BUS_STOP_SEARCH_AID";
