@@ -1,7 +1,9 @@
 package com.klipspringercui.sgbusgo;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,7 +16,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.id;
 
 public class FareCalculatorActivity extends BaseActivity implements GetJSONFareRateData.FareRateDataAvailableCallable {
 
@@ -71,6 +72,8 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
         this.btnFCSelectStartingBusStop.setOnClickListener(busStopOnClickListener);
         this.btnFCSelectBusService.setOnClickListener(busServiceOnClickListener);
         this.btnCalculate.setOnClickListener(calculateOnClickListener);
+
+        cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
     }
 
@@ -129,6 +132,12 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
         this.rates = FareRatesListHolder.getInstance().getData();
         if (rates == null || this.rates.size() == 0) {
             Log.d(TAG, "onCreate: loading json data");
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
+            if (!isConnected) {
+                showConnectionDialog();
+                return;
+            }
             GetJSONFareRateData getJSONFareRateData = new GetJSONFareRateData(this, FARE_URL);
             getJSONFareRateData.execute();
         } else {

@@ -67,4 +67,12 @@ public class AlightingAlarmActivity extends BaseActivity {
             }
         }
     }
+
+    private void setAlarm() {
+        if (selectedBusStop == null)
+            return;
+        double longitude = selectedBusStop.getLongitude();
+        double latitude = selectedBusStop.getLatitude();
+
+    }
 }

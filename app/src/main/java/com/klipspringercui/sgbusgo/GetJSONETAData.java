@@ -1,6 +1,5 @@
 package com.klipspringercui.sgbusgo;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -9,9 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+//import java.time.ZonedDateTime;
 
 /**
  * Created by Kevin on 12/3/17.
@@ -78,7 +78,7 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
     public void onDownloadComplete(String data, DownloadStatus status) {
 
         if (status == DownloadStatus.OK) {
-            this.etas = new ArrayList<ETAItem>();
+            this.etas = new ArrayList<>();
 
             try {
                 JSONObject jsonData = new JSONObject(data);
@@ -89,10 +89,16 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
                     String service = jsonETAItem.getString("ServiceNo");
                     JSONObject jsonNext = jsonETAItem.getJSONObject("NextBus");
                     String arrival1 = jsonNext.getString("EstimatedArrival");
+                    if (arrival1 != null && arrival1.length() > 1)
+                        arrival1 = processTimeData(arrival1);
                     JSONObject jsonSub = jsonETAItem.getJSONObject("SubsequentBus");
                     String arrival2 = jsonSub.getString("EstimatedArrival");
+                    if (arrival2 != null && arrival2.length() > 1)
+                        arrival2 = processTimeData(arrival2);
                     JSONObject jsonSub3 = jsonETAItem.getJSONObject("SubsequentBus3");
                     String arrival3 = jsonSub3.getString("EstimatedArrival");
+                    if (arrival3 != null && arrival3.length() > 1)
+                        arrival3 = processTimeData(arrival3);
                     if (service == null)
                         Log.e(TAG, "onDownloadComplete: JSON data error");
                     etas.add(new ETAItem(service, arrival1, arrival2, arrival3));
@@ -105,5 +111,14 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
             }
         }
 
+    }
+
+    private String processTimeData(String arrival) {
+        int indexL = arrival.indexOf("T");
+        int indexU = arrival.indexOf("+");
+        String arrivalTime = arrival.substring(indexL+1, indexU-3);
+        String arrvalHour = arrivalTime.substring(0,2);
+        String arrvalMin = arrivalTime.substring(3);
+        return arrivalTime;
     }
 }

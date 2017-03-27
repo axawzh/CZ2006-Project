@@ -22,7 +22,7 @@ import static com.klipspringercui.sgbusgo.LoadLocalData.LOAD_FAIL;
  * Created by Kevin on 15/3/17.
  */
 
-public class FirebaseDataHandler extends AsyncTask<Void, Void, Void> {
+class FirebaseDataHandler extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "FirebaseDataHandler";
     private Context mContext;

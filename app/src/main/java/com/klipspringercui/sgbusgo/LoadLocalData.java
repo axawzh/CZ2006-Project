@@ -1,12 +1,8 @@
 package com.klipspringercui.sgbusgo;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,8 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-import static android.content.ContentValues.TAG;
-import static com.klipspringercui.sgbusgo.BaseActivity.BUS_ROUTES_URL;
 import static com.klipspringercui.sgbusgo.BaseActivity.BUS_SERVICES_FILENAME;
 import static com.klipspringercui.sgbusgo.BaseActivity.BUS_STOPS_FILENAME;
 
@@ -35,7 +29,6 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
     private ArrayList<String> busServicesList;
     private ArrayList<BusStop> busStopsList;
 
-    ProgressDialog loadDialog = null;
 
     interface DataLoadCallable {
         void onDataLoaded (int flag);
@@ -57,7 +50,6 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             FileInputStream fis = mContext.openFileInput(BUS_SERVICES_FILENAME);
             ObjectInputStream ois = new ObjectInputStream(fis);
             this.busServicesList = (ArrayList) ois.readObject();
-            // recyclerViewAdapter.loadNewData(busStops);
             Log.d(TAG, "doInBackground: successfully recovered stored data");
             ois.close();
             fis.close();
@@ -65,7 +57,7 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
             flag = LOAD_FAIL;
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "doInBackground: Bus Service File not found -- loading");
+            Log.e(TAG, "doInBackground: Bus Service File not found -- loading");
             flag = LOAD_FAIL;
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,7 +69,6 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             FileInputStream fis = mContext.openFileInput(BUS_STOPS_FILENAME);
             ObjectInputStream ois = new ObjectInputStream(fis);
             this.busStopsList = (ArrayList) ois.readObject();
-            // recyclerViewAdapter.loadNewData(busStops);
             Log.d(TAG, "doInBackground: successfully recovered stored data");
             ois.close();
             fis.close();
@@ -96,23 +87,11 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             BusServicesListHolder.getInstance().setData(busServicesList);
             BusStopsListHolder.getInstance().setData(busStopsList);
         }
-        Log.d(TAG, "doInBackground: bus services" + busServicesList.get(0));
         return null;
     }
 
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        loadDialog = new ProgressDialog(mContext);
-        loadDialog.setTitle("Loading");
-        loadDialog.setCancelable(false);
-        loadDialog.show();
-    }
-
-    @Override
     protected void onPostExecute(Void aVoid) {
-        loadDialog.dismiss();
         mCallable.onDataLoaded(this.flag);
-
     }
 }

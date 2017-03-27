@@ -1,13 +1,10 @@
 package com.klipspringercui.sgbusgo;
 
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.app.AlertDialog;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -34,7 +31,11 @@ public class BaseActivity extends AppCompatActivity {
     static final int SEARCHMODE_WITHSN = 1;
     static final int SEARCHMODE_WITHOUTSN = 2;
 
+    AlertDialog connectionDialog = null;
 
+
+    ConnectivityManager cm = null;
+    boolean isConnected = false;
 
     void activateToolBar(boolean enableHome) {
         //Log.d(TAG, "activeToolBar: starts");
@@ -49,6 +50,20 @@ public class BaseActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(enableHome);
         }
+    }
+
+    protected void showConnectionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle("No internet connection");
+        builder.setMessage("Please turn on your Wi-Fi or Mobile Data");
+        connectionDialog = builder.create();
+        connectionDialog.show();
+    }
+
+    protected void dismissConnectionDialog() {
+        if (connectionDialog != null && connectionDialog.isShowing())
+            connectionDialog.dismiss();
     }
 
 }

@@ -3,6 +3,10 @@
     package="com.klipspringercui.sgbusgo">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
 
     <application
         android:allowBackup="true"
@@ -13,7 +17,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +28,8 @@
         <activity
             android:name=".ETAActivity"
             android:label="@string/title_activity_eta"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity android:name=".BusStopSelectionActivity" />
         <activity
             android:name=".BaseActivity"
@@ -32,7 +38,8 @@
         <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search_bus_stop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.klipspringercui.sgbusgo.BusStopSelectionActivity" />
@@ -48,16 +55,17 @@
             android:name=".FareCalculatorActivity"
             android:label="@string/title_activity_fare_calculator"
             android:parentActivityName=".BaseActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.klipspringercui.sgbusgo.BaseActivity" />
         </activity>
         <activity
             android:name=".AlightingAlarmActivity"
-            android:label="@string/title_activity_alighting_alarm"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BusServiceSelectionActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".BusServiceSelectionActivity"></activity>
         <activity
             android:name=".MyProfileActivity"
             android:label="@string/title_activity_my_profile"
@@ -76,6 +84,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.klipspringercui.sgbusgo.BaseActivity" />
         </activity>
+
     </application>
 
 </manifest>
