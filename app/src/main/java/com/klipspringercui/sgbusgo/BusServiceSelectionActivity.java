@@ -138,6 +138,9 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
             case "FareCalculatorActivity":
                 bundle.putString(FareCalculatorActivity.FC_SELECTED_BUSSERVICENO, selected);
                 break;
+            case "AddFrequentTripActivity":
+                bundle.putString(AddFrequentTripActivity.FT_SELECTED_BUSSERVICENO, selected);
+                break;
             default:
                 break;
         }

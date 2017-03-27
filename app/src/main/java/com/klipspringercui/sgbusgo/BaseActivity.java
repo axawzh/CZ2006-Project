@@ -18,12 +18,16 @@ public class BaseActivity extends AppCompatActivity {
     static final String BUS_STOPS_FILENAME = "bus_stops.ser";
     static final String BUS_STOPS_MAP_FILENAME = "bus_stops_map.ser";
     static final String BUS_ROUTES_FILENAME = "bus_route_group.ser";
+    static final String FREQUENT_TRIP_FILENAME = "frequent_trip.ser";
+    static final String ACTIVATED_FREQUENT_TRIP_FILENAME = "activated_frequent_trip.ser";
 
     static final String SEARCH_MODE = "BUS_STOP_SEARCH_MODE";
     static final String SEARCH_AID = "BUS_STOP_SEARCH_AID";
     static final int REQUEST_BUSSTOP = 1;
     static final int REQUEST_BUSSERVICE = 2;
     static final int REQUEST_BUSSTOP_B = 3;
+    static final int REQUEST_SETTIME = 4;
+    static final int REQUEST_ADDFREQUENTTRIP = 5;
     static final int SEARCHMODE_WITHSN = 1;
     static final int SEARCHMODE_WITHOUTSN = 2;
 
