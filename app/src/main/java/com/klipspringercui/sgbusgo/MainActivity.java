@@ -106,9 +106,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         isConnected = (activeNetwork != null) && activeNetwork.isConnectedOrConnecting();
 
-
         Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show();
-
 
         showLoadingDialog();
         LoadLocalData loadLocalData = new LoadLocalData(this, this);
@@ -151,7 +149,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
                     }
                 });
-
     }
 
     Button.OnClickListener mainActivityButtonListener = new Button.OnClickListener(){
