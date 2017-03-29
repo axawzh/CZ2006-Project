@@ -218,6 +218,7 @@ public class FragmentFrequentTripDetail extends DialogFragment {
                     tripList.remove(trip);
                     Log.d(TAG, "FT Detail: deleteFT -> Record deleted");
                     result = true;
+                    break;
                 } else {
                     Log.d(TAG, "FT Detail: deleteFT -> No record found");
                 }

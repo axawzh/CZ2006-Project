@@ -48,9 +48,9 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: starts");
         setContentView(R.layout.activity_my_profile);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        activateToolBar(false);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +182,7 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: starts");
         getSupportActionBar().setTitle(TITLE);
         listViewAdapter.clear();
         listViewAdapter.addAll(getSavedFrequentTripList(FREQUENT_TRIP_FILENAME));
@@ -192,7 +193,7 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     }
 
     public void onFragmentInteraction(FrequentTrip item) {
-
+        
     }
 
 }
