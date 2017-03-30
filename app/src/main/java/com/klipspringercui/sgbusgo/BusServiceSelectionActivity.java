@@ -67,7 +67,7 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
     @Override
     protected void onResume() {
         super.onResume();
-        this.busServices = BusServicesListHolder.getInstance().getData();
+        this.busServices = LocalDB.getInstance().getBusServicesData();
 
         if (this.busServices.size() == 0) {
             try {
@@ -85,7 +85,7 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            BusServicesListHolder.getInstance().setData(this.busServices);
+            LocalDB.getInstance().setBusServicesData(busServices);
         }
 
         if (searchKeyword != null && searchKeyword.length() > 0) {
@@ -141,6 +141,8 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
             case "AddFrequentTripActivity":
                 bundle.putString(AddFrequentTripActivity.FT_SELECTED_BUSSERVICENO, selected);
                 break;
+            case "BusStopSelectionActivity":
+                bundle.putString(BusStopSelectionActivity.FILTER_SERVICE_NO, selected);
             default:
                 break;
         }

@@ -10,12 +10,31 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.klipspringercui.sgbusgo.BusStopSelectionActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_busStop"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:scrollbars="vertical" />
+        android:layout_margin="0dp"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+        <Button
+            android:id="@+id/btnFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="8dp"
+            android:text="@string/filter_serviceno"
+            android:textAlignment="center" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_busStop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+
 </RelativeLayout>

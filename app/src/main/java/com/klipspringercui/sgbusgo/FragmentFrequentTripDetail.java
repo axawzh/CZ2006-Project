@@ -226,6 +226,7 @@ public class FragmentFrequentTripDetail extends DialogFragment {
             ois.close();
             fis.close();
             if (result) {
+                LocalDB.getInstance().setFrequentTripsData(tripList);
                 FileOutputStream fos = mContext.openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(tripList);

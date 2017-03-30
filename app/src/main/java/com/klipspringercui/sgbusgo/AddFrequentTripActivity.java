@@ -204,6 +204,7 @@ public class AddFrequentTripActivity extends BaseActivity {
                 ois.close();
                 fis.close();
                 frequentTripArrayList.add(ft);
+                LocalDB.getInstance().setFrequentTripsData(frequentTripArrayList);
                 FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(frequentTripArrayList);

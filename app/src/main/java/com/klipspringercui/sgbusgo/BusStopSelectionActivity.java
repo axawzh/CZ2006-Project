@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -38,7 +39,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
 
     private static final String TAG = "BusStopSelectionActivit";
     static final String BUS_STOP_SEARCH_KEYWORD = "SearchKeyword";
-
+    static final String FILTER_SERVICE_NO = "FILTER_SERVICE_NO";
+    static final int REQUEST_SEARCH = 1;
+    static final int REQUEST_FILTER = 2;
 
 //    static final int SEARCH_ALL = 0;
 //    static final int SEARCH_BUS_NO = 1;
@@ -50,8 +53,11 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     private ArrayList<BusStop> busStops = null;
 
     private String searchKeyword;
+    private String filterServiceNo;
     private int searchMode = SEARCHMODE_WITHOUTSN;
     private String searchAid;
+
+    Button btnFilter = null;
 
     interface BusStopSelectionCallable {
         void onBusStopSelected(BusStop selection);
@@ -78,6 +84,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         busStopRecyclerView.addItemDecoration(new DividerItemDecoration(this, R.drawable.divider));
         busStopRecyclerView.addOnItemTouchListener(new RecyclerItemOnClickListener(this, busStopRecyclerView, this));
 
+        btnFilter = (Button) findViewById(R.id.btnFilter);
+        btnFilter.setOnClickListener(FilterListener);
+
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
@@ -88,6 +97,15 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         }
 
     }
+
+    Button.OnClickListener FilterListener = new Button.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            filterServiceNo = null;
+            Intent intent = new Intent(BusStopSelectionActivity.this, BusServiceSelectionActivity.class);
+            startActivityForResult(intent, REQUEST_FILTER);
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -111,7 +129,10 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
                 this.busStops = busGroup.getBusStops();
                 if (this.busStops == null || this.busStops.size() == 0) {
                     Log.e(TAG, "onResume: bus group data damaged");
-                    this.busStops = BusStopsListHolder.getInstance().getData();
+                    this.busStops = LocalDB.getInstance().getBusStopsData();
+                } else {
+                    String buttonText = "Refined by Service No." + searchAid;
+                    btnFilter.setText(buttonText);
                 }
                 recyclerViewAdapter.loadNewData(busStops);
                 Toast.makeText(this, "Displaying Bus Stops of Service " + searchAid, Toast.LENGTH_SHORT).show();
@@ -122,30 +143,40 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "onResume: File not found -- loading all");
-                this.busStops = BusStopsListHolder.getInstance().getData();
+                this.busStops = LocalDB.getInstance().getBusStopsData();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            this.busStops = BusStopsListHolder.getInstance().getData();
+            this.busStops = LocalDB.getInstance().getBusStopsData();
+            btnFilter.setText(getResources().getString(R.string.filter_serviceno));
         }
 
-        if (this.busStops.size() == 0) {
+        if (this.filterServiceNo != null && this.filterServiceNo.length() > 0) {
+            String filename = BUS_GROUPS_FILENAME + filterServiceNo + ".ser";
             try {
-                Log.d(TAG, "onResume: recovering stored data");
-                FileInputStream fis = getApplicationContext().openFileInput(BUS_STOPS_FILENAME);
+                Log.d(TAG, "onResume: recovering stored data - " + filename);
+                FileInputStream fis = getApplicationContext().openFileInput(filename);
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                busStops = (ArrayList) ois.readObject();
+                BusGroup busGroup = (BusGroup) ois.readObject();
+                this.busStops = busGroup.getBusStops();
+                if (this.busStops == null || this.busStops.size() == 0) {
+                    Log.e(TAG, "onResume: bus group data damaged");
+                    this.busStops = LocalDB.getInstance().getBusStopsData();
+                } else {
+                    String buttonText = "Refined by Service No.  " + filterServiceNo;
+                    btnFilter.setText(buttonText);
+                }
                 recyclerViewAdapter.loadNewData(busStops);
+                Toast.makeText(this, "Displaying Bus Stops of Service " + filterServiceNo, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onResume: successfully recovered stored data");
                 ois.close();
                 fis.close();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
-                Log.d(TAG, "onResume: File not found -- loading");
-                GetJSONBusStopData getJSONData = new GetJSONBusStopData(this, getApplicationContext(), url, false);
-                getJSONData.execute();
+                Log.e(TAG, "onResume: File not found -- loading all");
+                this.busStops = LocalDB.getInstance().getBusStopsData();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -176,8 +207,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search) {
+            searchKeyword = null;
             Intent intent = new Intent(this, SearchActivity.class);
-            startActivityForResult(intent, 0);
+            startActivityForResult(intent, REQUEST_SEARCH);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -186,7 +218,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_SEARCH && resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
             if (bundle != null) {
                 this.searchKeyword = bundle.getString(BUS_STOP_SEARCH_KEYWORD);
@@ -196,6 +228,16 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         } else {
             this.searchKeyword = null;
         }
+        if (requestCode == REQUEST_FILTER && resultCode == RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            if (bundle != null) {
+                this.filterServiceNo = bundle.getString(FILTER_SERVICE_NO);
+            } else {
+                this.filterServiceNo = null;
+            }
+        }
+
+
     }
 
     @Override
@@ -236,7 +278,7 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         } catch (IOException e) {
             e.printStackTrace();
         }
-        BusStopsListHolder.getInstance().setData((ArrayList)data);
+        LocalDB.getInstance().setBusServicesData((ArrayList)data);
     }
 
     @Override

@@ -150,6 +150,6 @@ class GetJSONBusStopData extends AsyncTask<String, Void, List<BusStop>> implemen
             e.printStackTrace();
         }
         
-        BusStopsListHolder.getInstance().setData((ArrayList) busStopsList);
+        LocalDB.getInstance().setBusStopsData((ArrayList) busStopsList);
     }
 }

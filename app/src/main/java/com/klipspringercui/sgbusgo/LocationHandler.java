@@ -44,13 +44,11 @@ class LocationHandler {
             Log.e(TAG, "setAlightingAlarm: location manager is null");
             return false;
         }
-
         //Remove the previous alighting alarm
         if (currentPending != null) {
             cancelAlightingAlarm(context, currentPending);
             currentPending = null;
         }
-
         //check permission for API level 23+
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(context, "This function needs location permission to work properly", Toast.LENGTH_SHORT).show();
@@ -75,7 +73,7 @@ class LocationHandler {
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(context, "This function needs location permission to work properly", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "getUserLocation: permission not granted");
             return null;
@@ -96,19 +94,32 @@ class LocationHandler {
     }
 
     public boolean cancelAlightingAlarm(Context context, PendingIntent pendingIntent) {
+
         if (locationManager == null) {
             Log.e(TAG, "setAlightingAlarm: location manager is null");
             return false;
         }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(context, "This function needs location permission to work properly", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "getUserLocation: permission not granted");
+            return false;
+        }
+        pendingIntent.cancel();
         locationManager.removeProximityAlert(pendingIntent);
         return true;
     }
 
     public boolean cancelAlightingAlarm(Context context) {
+
         if (locationManager == null || currentPending == null) {
             Log.d(TAG, "setAlightingAlarm: null");
             return false;
         } else {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(context, "This function needs location permission to work properly", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "getUserLocation: permission not granted");
+                return false;
+            }
             locationManager.removeProximityAlert(currentPending);
             return true;
         }

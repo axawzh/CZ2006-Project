@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.app.FragmentTransaction;
 import android.app.DialogFragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,6 +43,12 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     Button buttonSelectBusService = null;
     TextView textSelectedBusService = null;
     Button buttonGetETA = null;
+
+    RecyclerView recyclerViewFreq = null;
+    ETADRecyclerViewAdapter recyclerViewAdapter;
+
+    private ArrayList<ETAItem> frequentTripETAs = new ArrayList<ETAItem>();
+    private int etaObtained;
 
     private long btnLastClickTime = 0;
 
@@ -71,6 +80,11 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
 
         buttonGetETA = (Button) findViewById(R.id.btnGetETA);
         buttonGetETA.setOnClickListener(getETAOnClickListener);
+
+        recyclerViewFreq = (RecyclerView) findViewById(R.id.recyclerView_ETAFreq);
+        recyclerViewFreq.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewAdapter = new ETADRecyclerViewAdapter(this.frequentTripETAs, null);
+        recyclerViewFreq.setAdapter(recyclerViewAdapter);
 
         cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -118,14 +132,29 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
                 showConnectionDialog();
                 return;
             }
-            GetJSONETAData getJSONETAData = new GetJSONETAData(ETAActivity.this, ETA_URL);
-            if (selectedBusService == null) {
-                getJSONETAData.execute(selectedBusStop.getBusStopCode());
-            } else {
-                getJSONETAData.execute(selectedBusStop.getBusStopCode(), selectedBusService);
-            }
+//            GetJSONETAData getJSONETAData = new GetJSONETAData(ETAActivity.this, ETA_URL);
+//            if (selectedBusService == null) {
+//                getJSONETAData.execute(selectedBusStop.getBusStopCode());
+//            } else {
+//                getJSONETAData.execute(selectedBusStop.getBusStopCode(), selectedBusService);
+//            }
+            showETADialog(selectedBusStop, selectedBusService);
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ArrayList<FrequentTrip> frequentTrips = LocalDB.getInstance().getFrequentTripsData();
+        etaObtained = frequentTrips.size();
+        for (FrequentTrip trip : frequentTrips) {
+            String busStopCode = trip.getStartingBusStop().getBusStopCode();
+            String busServiceNo = trip.getServiceNo();
+            GetJSONETAData getJSONETAData = new GetJSONETAData(this, ETA_URL);
+            getJSONETAData.execute(busStopCode, busServiceNo);
+        }
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,22 +180,30 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     }
 
     @Override
-    public void onETADataAvailable(List<ETAItem> data) {
+    public void onETADataAvailable(List<ETAItem> data, String serviceNo, String busStopCode) {
         Log.d(TAG, "onETADataAvailable: called with data - " + data);
         if (data == null || data.size() == 0) {
             Log.e(TAG, "onETADataAvailable: data not available");
             Toast.makeText(this, "Data of this bus service is currently not available", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (this.selectedBusStop != null) {
-            showETADialog(this.selectedBusStop, data);
+        this.frequentTripETAs.addAll(data);
+        etaObtained -= data.size();
+        if (etaObtained <= 0) {
+            recyclerViewAdapter.loadNewData(frequentTripETAs, null);
         }
 
     }
 
-    void showETADialog(BusStop busStop, List<ETAItem> data) {
+//    void showETADialog(BusStop busStop, List<ETAItem> data) {
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//        DialogFragment etaDialog = DialogDisplayETA.newInstance(data, busStop);
+//        etaDialog.show(ft, "dialog");
+//    }
+
+    void showETADialog(BusStop busStop, String busServiceNo) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        DialogFragment etaDialog = DialogDisplayETA.newInstance(data, busStop);
+        DialogFragment etaDialog = DialogDisplayETA.newInstance(busStop, busServiceNo);
         etaDialog.show(ft, "dialog");
     }
 

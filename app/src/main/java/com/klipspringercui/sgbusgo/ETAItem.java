@@ -11,9 +11,11 @@ class ETAItem implements Serializable {
     private String arrival1;
     private String arrival2;
     private String arrival3;
+    private String busStopCode;
 
-    public ETAItem(String serviceNo, String arrival1, String arrival2, String arrival3) {
+    public ETAItem(String serviceNo, String busStopCode, String arrival1, String arrival2, String arrival3) {
         this.serviceNo = serviceNo;
+        this.busStopCode = busStopCode;
         this.arrival1 = arrival1;
         this.arrival2 = arrival2;
         this.arrival3 = arrival3;
@@ -33,6 +35,10 @@ class ETAItem implements Serializable {
 
     public String getArrival3() {
         return arrival3;
+    }
+
+    public String getBusStopCode() {
+        return busStopCode;
     }
 
     @Override

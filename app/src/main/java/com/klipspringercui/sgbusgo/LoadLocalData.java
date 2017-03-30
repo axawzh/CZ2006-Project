@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import static com.klipspringercui.sgbusgo.BaseActivity.BUS_SERVICES_FILENAME;
 import static com.klipspringercui.sgbusgo.BaseActivity.BUS_STOPS_FILENAME;
+import static com.klipspringercui.sgbusgo.BaseActivity.FREQUENT_TRIP_FILENAME;
 
 /**
  * Created by Kevin on 12/3/17.
@@ -28,6 +29,7 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
 
     private ArrayList<String> busServicesList;
     private ArrayList<BusStop> busStopsList;
+    private ArrayList<FrequentTrip> frequentTripsList;
 
 
     interface DataLoadCallable {
@@ -83,9 +85,28 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             flag = LOAD_FAIL;
         }
 
+        try {
+            FileInputStream fis = mContext.openFileInput(FREQUENT_TRIP_FILENAME);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            this.frequentTripsList = (ArrayList) ois.readObject();
+            ois.close();
+            fis.close();
+            flag = LOAD_OK;
+        } catch (ClassNotFoundException e) {
+            Log.e(TAG, "doInBackground: class not found");
+            flag = LOAD_FAIL;
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "doInBackground: Bus Stops File not found");
+            flag = LOAD_FAIL;
+        } catch (IOException e) {
+            e.printStackTrace();
+            flag = LOAD_FAIL;
+        }
+
         if (flag == LOAD_OK) {
-            BusServicesListHolder.getInstance().setData(busServicesList);
-            BusStopsListHolder.getInstance().setData(busStopsList);
+            LocalDB.getInstance().setBusServicesData(busServicesList);
+            LocalDB.getInstance().setBusStopsData(busStopsList);
+            LocalDB.getInstance().setFrequentTripsData(frequentTripsList);
         }
         return null;
     }

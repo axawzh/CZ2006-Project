@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ class ETADRecyclerViewAdapter extends RecyclerView.Adapter<ETADRecyclerViewAdapt
 
     private List<ETAItem> etas;
     private BusStop busStop;
+    private ArrayList<FrequentTrip> frequentTrips;
 
     static class ETAViewHolder extends RecyclerView.ViewHolder {
 
@@ -41,6 +43,9 @@ class ETADRecyclerViewAdapter extends RecyclerView.Adapter<ETADRecyclerViewAdapt
     public ETADRecyclerViewAdapter(List<ETAItem> etas, BusStop busStop) {
         this.etas = etas;
         this.busStop = busStop;
+        if (busStop == null) {
+            this.frequentTrips = LocalDB.getInstance().getFrequentTripsData();
+        }
     }
 
     @Override
@@ -51,10 +56,23 @@ class ETADRecyclerViewAdapter extends RecyclerView.Adapter<ETADRecyclerViewAdapt
 
     @Override
     public void onBindViewHolder(ETAViewHolder holder, int position) {
+        if (this.etas == null || this.etas.size() == 0) {
+            holder.txtBusServiceNo.setText("You haven't set any frequent trip yet");
+            return;
+        }
         if (this.etas != null) {
             ETAItem item = etas.get(position);
             holder.txtBusServiceNo.setText(item.getServiceNo());
-            holder.txtBusStop.setText(busStop.getDescription());
+            if (busStop != null) {
+                holder.txtBusStop.setText(busStop.getDescription());
+            } else {
+                for (FrequentTrip trip : frequentTrips) {
+                    if (trip.getStartingBusStop().getBusStopCode().equals(item.getBusStopCode())) {
+                        holder.txtBusStop.setText(trip.getStartingBusStop().getDescription());
+                        break;
+                    }
+                }
+            }
             if (item.getArrival1() == null || item.getArrival1().length() == 0 || item.getArrival1().equals("0")) {
                 holder.txtNextETA.setText("No operating buses");
                 holder.txtSubETA.setText("");
@@ -69,7 +87,7 @@ class ETADRecyclerViewAdapter extends RecyclerView.Adapter<ETADRecyclerViewAdapt
 
     @Override
     public int getItemCount() {
-        return (this.etas == null)? 0 : this.etas.size();
+        return (this.etas == null || this.etas.size() == 0)? 1 : this.etas.size();
     }
 
     public void loadNewData(List<ETAItem> data, BusStop busStop) {

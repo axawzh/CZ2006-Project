@@ -228,15 +228,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     @Override
     protected void onResume() {
         super.onResume();
-
-        this.busServicesList = BusServicesListHolder.getInstance().getData();
-        this.busStopsList = BusStopsListHolder.getInstance().getData();
-
-        if (this.busServicesList.size() != 0 && this.busStopsList.size() != 0)  {
-            Log.d(TAG, "onResume: data restored with size " + this.busStopsList.size() + " and " + this.busServicesList.size());
-            return;
-        }
-
     }
 
     @Override
@@ -422,7 +413,7 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         }
 
 
-        BusStopsListHolder.getInstance().setData(busStopsList);
+        LocalDB.getInstance().setBusStopsData(busStopsList);
     }
 
     private void showLoadingDialog() {

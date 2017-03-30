@@ -33,7 +33,6 @@ public class BaseActivity extends AppCompatActivity {
 
     AlertDialog connectionDialog = null;
 
-
     ConnectivityManager cm = null;
     boolean isConnected = false;
 

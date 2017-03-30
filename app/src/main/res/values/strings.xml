@@ -16,4 +16,5 @@
     <string name="bus_stop_no_match">No Bus Stop Matches</string>
     <string name="bus_service_no_match">No bus service number matches</string>
     <string name="action_proximity">ACTION_PROXIMITY_ALERT</string>
+    <string name="filter_serviceno">Refine by: Bus Service No.</string>
 </resources>

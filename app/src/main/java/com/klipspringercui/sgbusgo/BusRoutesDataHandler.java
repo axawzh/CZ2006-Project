@@ -147,7 +147,7 @@ class BusRoutesDataHandler extends AsyncTask<List<BusRoute>, Void, Void> {
             e.printStackTrace();
         }
 
-        BusServicesListHolder.getInstance().setData(busServicesList);
+        LocalDB.getInstance().setBusServicesData(busServicesList);
         return null;
     }
 

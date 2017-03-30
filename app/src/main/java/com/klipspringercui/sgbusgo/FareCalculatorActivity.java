@@ -1,5 +1,6 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -41,6 +42,8 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
     private ArrayList<FareRate> rates;
     boolean btnBusStopEnabled = false;
     boolean btnCalculateEnabled = false;
+
+    ProgressDialog loadingDialog;
 
 
     @Override
@@ -129,7 +132,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
     @Override
     protected void onResume() {
         super.onResume();
-        this.rates = FareRatesListHolder.getInstance().getData();
+        this.rates = LocalDB.getInstance().getFareRatesData();
         if (rates == null || this.rates.size() == 0) {
             Log.d(TAG, "onCreate: loading json data");
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -138,6 +141,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
                 showConnectionDialog();
                 return;
             }
+            showFareRateLoadingDialog();
             GetJSONFareRateData getJSONFareRateData = new GetJSONFareRateData(this, FARE_URL);
             getJSONFareRateData.execute();
         } else {
@@ -145,6 +149,12 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
             this.btnCalculateEnabled = true;
         }
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dismissFareRateLoadingDialog();
     }
 
     @Override
@@ -178,9 +188,24 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
 
     @Override
     public void onFareRateDataAvailable(List<FareRate> data) {
+        dismissFareRateLoadingDialog();
         Log.d(TAG, "onFareRateDataAvailable: data received -" + data);
         Log.d(TAG, "doInBackground: data received with size " + data.size());
-        FareRatesListHolder.getInstance().setData((ArrayList) data);
+        LocalDB.getInstance().setFareRatesData((ArrayList) data);
         this.btnCalculateEnabled = true;
+    }
+
+    private void showFareRateLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing())
+            return;
+        loadingDialog = new ProgressDialog(this);
+        loadingDialog.setTitle("Loading Latest Fare Rates");
+        loadingDialog.setCancelable(false);
+        loadingDialog.show();
+    }
+
+    private void dismissFareRateLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing())
+            loadingDialog.dismiss();
     }
 }

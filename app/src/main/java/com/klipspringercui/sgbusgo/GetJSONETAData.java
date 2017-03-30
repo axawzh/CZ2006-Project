@@ -28,7 +28,7 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
     private final ETADataAvailableCallable mCallable;
 
     interface ETADataAvailableCallable {
-        void onETADataAvailable(List<ETAItem> data);
+        void onETADataAvailable(List<ETAItem> data, String serviceNo, String busStopCode);
     }
 
     public GetJSONETAData(ETADataAvailableCallable callable, String baseURL) {
@@ -71,7 +71,7 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
         super.onPostExecute(aVoid);
         if (this.etas != null)
             Log.d(TAG, "onPostExecute: returning data - " + etas);
-            mCallable.onETADataAvailable(this.etas);
+            mCallable.onETADataAvailable(this.etas, this.serviceNo, this.busStopCode);
     }
 
     @Override
@@ -101,7 +101,7 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
                         arrival3 = processTimeData(arrival3);
                     if (service == null)
                         Log.e(TAG, "onDownloadComplete: JSON data error");
-                    etas.add(new ETAItem(service, arrival1, arrival2, arrival3));
+                    etas.add(new ETAItem(service, busStopCode, arrival1, arrival2, arrival3));
                 }
 
             } catch (JSONException e) {
