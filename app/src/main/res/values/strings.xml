@@ -8,13 +8,12 @@
     <string name="title_activity_search_bus_stop">Search Bus Stops</string>
     <string name="title_activity_bus_service_selection">Select Bus Service No</string>
     <string name="title_activity_bus_stop_selection">Select Bus Stop</string>
-    <string name="bus_stop_no_match">No Bus Stop Matches</string>
-    <string name="bus_service_no_match">No bus service number matches</string>
-
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="title_activity_my_profile">MyProfileActivity</string>
-
+    <string name="title_activity_my_profile">My Profile</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_add_frequent_trip">AddFrequentTripActivity</string>
+    <string name="title_activity_add_frequent_trip">Add Frequent Trip</string>
+    <string name="bus_stop_no_match">No Bus Stop Matches</string>
+    <string name="bus_service_no_match">No bus service number matches</string>
+    <string name="action_proximity">ACTION_PROXIMITY_ALERT</string>
 </resources>

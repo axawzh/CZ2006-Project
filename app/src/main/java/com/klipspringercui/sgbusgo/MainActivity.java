@@ -115,6 +115,8 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         LoadLocalData loadLocalData = new LoadLocalData(this, this);
         loadLocalData.execute();
 
+        LocationHandler.getInstance().setLocationManager(getApplicationContext());
+
         reloadFlags = new boolean[3];
         reloadFlags[0] = false;
         reloadFlags[1] = false;

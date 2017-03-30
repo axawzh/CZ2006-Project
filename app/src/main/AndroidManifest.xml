@@ -85,6 +85,12 @@
                 android:value="com.klipspringercui.sgbusgo.BaseActivity" />
         </activity>
 
+        <receiver android:name=".ProximityReceiver"  android:exported="true">
+            <intent-filter>
+                <action android:name="com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
