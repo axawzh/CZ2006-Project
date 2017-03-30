@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.app.FragmentTransaction;
@@ -16,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +46,7 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     Button buttonSelectBusService = null;
     TextView textSelectedBusService = null;
     Button buttonGetETA = null;
+    ConstraintSet mConstraintSet = null;
 
     RecyclerView recyclerViewFreq = null;
     ETADRecyclerViewAdapter recyclerViewAdapter;
@@ -85,6 +89,10 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
         recyclerViewFreq.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new ETADRecyclerViewAdapter(this.frequentTripETAs, null);
         recyclerViewFreq.setAdapter(recyclerViewAdapter);
+
+        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.content_eta);
+        mConstraintSet = new ConstraintSet();
+        mConstraintSet.clone(layout);
 
         cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -132,12 +140,6 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
                 showConnectionDialog();
                 return;
             }
-//            GetJSONETAData getJSONETAData = new GetJSONETAData(ETAActivity.this, ETA_URL);
-//            if (selectedBusService == null) {
-//                getJSONETAData.execute(selectedBusStop.getBusStopCode());
-//            } else {
-//                getJSONETAData.execute(selectedBusStop.getBusStopCode(), selectedBusService);
-//            }
             showETADialog(selectedBusStop, selectedBusService);
         }
     };
@@ -147,6 +149,12 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
         super.onResume();
         ArrayList<FrequentTrip> frequentTrips = LocalDB.getInstance().getFrequentTripsData();
         etaObtained = frequentTrips.size();
+        frequentTripETAs.clear();
+//        if (frequentTrips.size() <= 1) {
+//            mConstraintSet.setGuidelineBegin(R.id.guidelineETA,160);
+//        } else {
+//            mConstraintSet.setGuidelineBegin(R.id.guidelineETA,240);
+//        }
         for (FrequentTrip trip : frequentTrips) {
             String busStopCode = trip.getStartingBusStop().getBusStopCode();
             String busServiceNo = trip.getServiceNo();
@@ -187,9 +195,11 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
             Toast.makeText(this, "Data of this bus service is currently not available", Toast.LENGTH_SHORT).show();
             return;
         }
-        this.frequentTripETAs.addAll(data);
-        etaObtained -= data.size();
-        if (etaObtained <= 0) {
+        if (etaObtained > 0) {
+            this.frequentTripETAs.addAll(data);
+            etaObtained -= data.size();
+        }
+        if (etaObtained == 0) {
             recyclerViewAdapter.loadNewData(frequentTripETAs, null);
         }
 

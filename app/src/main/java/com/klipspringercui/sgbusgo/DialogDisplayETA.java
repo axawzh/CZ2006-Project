@@ -143,7 +143,7 @@ public class DialogDisplayETA extends DialogFragment implements GetJSONETAData.E
         ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
         // Assign window properties to fill the parent
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
         // Call super onResume after sizing
         super.onResume();

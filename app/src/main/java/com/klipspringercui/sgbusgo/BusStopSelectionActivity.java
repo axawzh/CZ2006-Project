@@ -5,10 +5,12 @@ import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -75,7 +77,18 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
 //            searchBusServiceNo = intent.getIntExtra(BUSSTOP_SEARCH_BUSSERVICENO, 0);
 //        }
 
-        activateToolBar(false);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                actionBar = getSupportActionBar();
+                actionBar.setTitle(R.string.title_activity_bus_stop_selection);
+            }
+        } else {
+            actionBar.setTitle(R.string.title_activity_bus_stop_selection);
+        }
+
         busStops = new ArrayList<BusStop>();
         RecyclerView busStopRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_busStop);
         busStopRecyclerView.setLayoutManager(new LinearLayoutManager(this));

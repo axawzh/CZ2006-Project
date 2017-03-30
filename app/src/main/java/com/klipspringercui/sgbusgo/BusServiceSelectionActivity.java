@@ -1,10 +1,12 @@
 package com.klipspringercui.sgbusgo;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +37,18 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_service_selection);
-        activateToolBar(false);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                actionBar = getSupportActionBar();
+                actionBar.setTitle(R.string.title_activity_bus_service_selection);
+            }
+        } else {
+            actionBar.setTitle(R.string.title_activity_bus_service_selection);
+        }
 
         RecyclerView busServicesRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_busService);
         busServicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));

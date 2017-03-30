@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -42,7 +43,18 @@ public class AlightingAlarmActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alighting_alarm);
-        activateToolBar(false);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                actionBar = getSupportActionBar();
+                actionBar.setTitle(R.string.title_activity_alighting_alarm);
+            }
+        } else {
+            actionBar.setTitle(R.string.title_activity_alighting_alarm);
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
