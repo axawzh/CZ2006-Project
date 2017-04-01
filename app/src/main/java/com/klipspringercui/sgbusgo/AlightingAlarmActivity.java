@@ -7,10 +7,12 @@ package com.klipspringercui.sgbusgo;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +27,7 @@ import static com.klipspringercui.sgbusgo.FareCalculatorActivity.FC_SELECTED_BUS
 public class AlightingAlarmActivity extends BaseActivity {
 
     private static final String TAG = "AlightingAlarmActivity";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     static final String AA_SELECTED_BUSSTOP = "ALARM SELECTED BUS STOP";
     static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
@@ -44,24 +47,21 @@ public class AlightingAlarmActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alighting_alarm);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                setSupportActionBar(toolbar);
-                actionBar = getSupportActionBar();
-                actionBar.setTitle(R.string.title_activity_alighting_alarm);
-            }
-        } else {
-            actionBar.setTitle(R.string.title_activity_alighting_alarm);
-        }
+        activateToolBar(false, R.string.title_activity_alighting_alarm);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                CurrentTrip current = LocalDB.getInstance().getCurrentTrip();
+                if (current == null) {
+                    Snackbar.make(view, "You haven't start a trip yet.\n Set an alighting alarm or activate a frequent trip to start one!", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    Toast.makeText(AlightingAlarmActivity.this, "Connecting...", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AlightingAlarmActivity.this, CurrentTripActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -92,6 +92,17 @@ public class AlightingAlarmActivity extends BaseActivity {
             setAlarm();
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -129,10 +140,17 @@ public class AlightingAlarmActivity extends BaseActivity {
 
         double longitude = selectedBusStop.getLongitude();
         double latitude = selectedBusStop.getLatitude();
+        Location busStopLocation = new Location("busStop");
+        busStopLocation.setLatitude(latitude);
+        busStopLocation.setLongitude(longitude);
+        if (location != null) {
+            double distance = busStopLocation.distanceTo(location);
+            Log.d(TAG, "setAlarm: distance to bus stop: " + distance);
+        }
         Log.d(TAG, "setAlarm: <user> latitude " + userLatitude + "  longitude " + userLongitude);
         Log.d(TAG, "setAlarm: <target> latitude " + latitude + "  longitude " + longitude);
         //getApplicationContext().sendBroadcast(intent);
         LocationHandler.getInstance().setAlightingAlarm(getApplicationContext(), latitude, longitude, pendingIntent);
-
+        LocalDB.getInstance().setCurrentTrip(new CurrentTrip(selectedBusStop));
     }
 }

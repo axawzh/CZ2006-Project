@@ -17,4 +17,14 @@
     <string name="bus_service_no_match">No bus service number matches</string>
     <string name="action_proximity">ACTION_PROXIMITY_ALERT</string>
     <string name="filter_serviceno">Refine by: Bus Service No.</string>
+
+    <string name="title_activity_current_trip">CurrentTripActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+    <string name="btn_cancel_the_trip">Cancel the Trip</string>
 </resources>

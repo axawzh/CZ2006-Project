@@ -13,6 +13,8 @@ public class BaseActivity extends AppCompatActivity {
     static final String ETA_URL = "http://datamall2.mytransport.sg/ltaodataservice/BusArrival";
     static final String FARE_URL = "https://data.gov.sg/api/action/datastore_search?resource_id=d9b3b8ec-ac41-41f1-b76f-70396125774d&limit=50";
 
+    static final String GOOGLE_MAP_API_KEY = "AIzaSyAAtPkVPCpI8Wpy-656eOc6mNAozejLOFw";
+
     static final String BUS_GROUPS_FILENAME = "bus_group_";
     static final String BUS_SERVICES_FILENAME = "bus_services.ser";
     static final String BUS_STOPS_FILENAME = "bus_stops.ser";
@@ -51,6 +53,22 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    void activateToolBar(boolean enableHome, int title_id) {
+        //Log.d(TAG, "activeToolBar: starts");
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                actionBar = getSupportActionBar();
+                actionBar.setTitle(title_id);
+            }
+        }
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(enableHome);
+            actionBar.setTitle(title_id);
+        }
+    }
     protected void showConnectionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);

@@ -98,6 +98,7 @@ public class DialogDisplayETA extends DialogFragment implements GetJSONETAData.E
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        getDialog().setTitle("Estimated Arrival Time");
         View view = inflater.inflate(R.layout.fragment_dialog_display_et, container, false);
         return view;
     }

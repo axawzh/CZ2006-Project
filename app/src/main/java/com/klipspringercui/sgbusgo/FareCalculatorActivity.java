@@ -56,8 +56,15 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                CurrentTrip current = LocalDB.getInstance().getCurrentTrip();
+                if (current == null) {
+                    Snackbar.make(view, "You haven't start a trip yet.\n Set an alighting alarm or activate a frequent trip to start one!", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    Toast.makeText(FareCalculatorActivity.this, "Connecting...", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(FareCalculatorActivity.this, CurrentTripActivity.class);
+                    startActivity(intent);
+                }
             }
         });
         

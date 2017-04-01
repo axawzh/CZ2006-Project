@@ -71,25 +71,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_stop_selection);
 
-//        Intent intent = getIntent();
-//        searchMode = intent.getIntExtra(BUSSTOP_SEARCH_MODE, SEARCH_ALL);
-//        if (searchMode == SEARCH_BUS_NO) {
-//            searchBusServiceNo = intent.getIntExtra(BUSSTOP_SEARCH_BUSSERVICENO, 0);
-//        }
+        activateToolBar(false, R.string.title_activity_bus_stop_selection);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                setSupportActionBar(toolbar);
-                actionBar = getSupportActionBar();
-                actionBar.setTitle(R.string.title_activity_bus_stop_selection);
-            }
-        } else {
-            actionBar.setTitle(R.string.title_activity_bus_stop_selection);
-        }
-
-        busStops = new ArrayList<BusStop>();
+        busStops = new ArrayList<>();
         RecyclerView busStopRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_busStop);
         busStopRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new BusStopsRecyclerViewAdapter(this, busStops);
@@ -298,8 +282,8 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     public void onItemClick(View view, int position) {
         Intent intent = getIntent();
         String caller = getCallingActivity().getClassName().substring(28);
-        Toast.makeText(this, caller, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onItemClick: calling activity: " + caller);
+        //Toast.makeText(this, caller, Toast.LENGTH_SHORT).show();
+        //Log.d(TAG, "onItemClick: calling activity: " + caller);
         Bundle bundle = new Bundle();
         BusStop selected = recyclerViewAdapter.getBusStop(position);
         if (selected == null)

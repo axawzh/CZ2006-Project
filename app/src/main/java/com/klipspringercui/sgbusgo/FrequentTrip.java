@@ -73,3 +73,18 @@ class FrequentTrip implements Serializable {
             return "0" + String.valueOf(c);
     };
 }
+
+/**
+ * For testing only
+ */
+class CurrentTrip {
+    private BusStop alightingBusStop;
+
+    public CurrentTrip(BusStop alightingBusStop) {
+        this.alightingBusStop = alightingBusStop;
+    }
+
+    public BusStop getAlightingBusStop() {
+        return alightingBusStop;
+    }
+}

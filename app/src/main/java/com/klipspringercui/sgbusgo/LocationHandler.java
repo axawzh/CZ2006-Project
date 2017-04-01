@@ -50,7 +50,7 @@ class LocationHandler {
             currentPending = null;
         }
         //check permission for API level 23+
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(context, "This function needs location permission to work properly", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "setAlightingAlarm: permission not granted");
             return false;
@@ -94,7 +94,7 @@ class LocationHandler {
     }
 
     public boolean cancelAlightingAlarm(Context context, PendingIntent pendingIntent) {
-
+        Log.d(TAG, "cancelAlightingAlarm: starts");
         if (locationManager == null) {
             Log.e(TAG, "setAlightingAlarm: location manager is null");
             return false;
@@ -110,7 +110,7 @@ class LocationHandler {
     }
 
     public boolean cancelAlightingAlarm(Context context) {
-
+        Log.d(TAG, "cancelAlightingAlarm: starts");
         if (locationManager == null || currentPending == null) {
             Log.d(TAG, "setAlightingAlarm: null");
             return false;

@@ -74,12 +74,20 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         activateToolBar(false);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                CurrentTrip current = LocalDB.getInstance().getCurrentTrip();
+                if (current == null) {
+                    Snackbar.make(view, "You haven't start a trip yet.\n Set an alighting alarm or activate a frequent trip to start one!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Connecting...", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, CurrentTripActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -411,7 +419,6 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         LocalDB.getInstance().setBusStopsData(busStopsList);
     }

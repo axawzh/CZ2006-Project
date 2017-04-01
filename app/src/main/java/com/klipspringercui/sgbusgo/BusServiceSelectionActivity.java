@@ -38,17 +38,7 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_service_selection);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                setSupportActionBar(toolbar);
-                actionBar = getSupportActionBar();
-                actionBar.setTitle(R.string.title_activity_bus_service_selection);
-            }
-        } else {
-            actionBar.setTitle(R.string.title_activity_bus_service_selection);
-        }
+        activateToolBar(false, R.string.title_activity_bus_service_selection);
 
         RecyclerView busServicesRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_busService);
         busServicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -135,8 +125,8 @@ public class BusServiceSelectionActivity extends BaseActivity implements Recycle
     public void onItemClick(View view, int position) {
         Intent intent = getIntent();
         String caller = getCallingActivity().getClassName().substring(28);
-        Toast.makeText(this, caller, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onItemClick: calling activity: " + caller);
+        //Toast.makeText(this, caller, Toast.LENGTH_SHORT).show();
+        //Log.d(TAG, "onItemClick: calling activity: " + caller);
         Bundle bundle = new Bundle();
         String selected = recyclerViewAdapter.getBusServiceNo(position);
         if (selected == null)

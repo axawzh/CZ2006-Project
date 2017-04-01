@@ -13,6 +13,7 @@ class LocalDB {
     private ArrayList<BusStop> busStops = new ArrayList<>();
     private ArrayList<FareRate> rates = new ArrayList<>();
     private ArrayList<FrequentTrip> frequentTrips = new ArrayList<>();
+    private CurrentTrip currentTrip = null;
 
     private static final LocalDB holder = new LocalDB();
 
@@ -52,4 +53,11 @@ class LocalDB {
         return busStops;
     }
 
+    public CurrentTrip getCurrentTrip() {
+        return currentTrip;
+    }
+
+    public void setCurrentTrip(CurrentTrip currentTrip) {
+        this.currentTrip = currentTrip;
+    }
 }

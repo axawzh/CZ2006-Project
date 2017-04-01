@@ -4,9 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,11 +14,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <service android:name=".GeofenceTransitionsIntentService"/>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,8 +31,8 @@
         <activity
             android:name=".ETAActivity"
             android:label="@string/title_activity_eta"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".BusStopSelectionActivity" />
         <activity
             android:name=".BaseActivity"
@@ -38,8 +41,8 @@
         <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search_bus_stop"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.klipspringercui.sgbusgo.BusStopSelectionActivity" />
@@ -55,17 +58,17 @@
             android:name=".FareCalculatorActivity"
             android:label="@string/title_activity_fare_calculator"
             android:parentActivityName=".BaseActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.klipspringercui.sgbusgo.BaseActivity" />
         </activity>
         <activity
             android:name=".AlightingAlarmActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".BusServiceSelectionActivity"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BusServiceSelectionActivity" />
         <activity
             android:name=".MyProfileActivity"
             android:label="@string/title_activity_my_profile"
@@ -85,11 +88,28 @@
                 android:value="com.klipspringercui.sgbusgo.BaseActivity" />
         </activity>
 
-        <receiver android:name=".ProximityReceiver"  android:exported="true">
+        <receiver
+            android:name=".ProximityReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT"/>
+                <action android:name="com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".CurrentTripActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_current_trip"
+            android:theme="@style/FullscreenTheme">
+
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAAtPkVPCpI8Wpy-656eOc6mNAozejLOFw"/>
 
     </application>
 
