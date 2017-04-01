@@ -22,7 +22,8 @@
         android:layout_marginTop="32dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:paddingTop="32dp">
+        android:paddingTop="32dp"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -39,10 +40,11 @@
                 android:background="@drawable/time" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Estimated Arrival Time"
+                android:textAlignment="center"
                 android:textColor="@color/white" />
 
             <Button
@@ -53,10 +55,11 @@
                 android:background="@drawable/calculator" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Fare Calculator"
+                android:textAlignment="center"
                 android:textColor="@color/white" />
 
         </LinearLayout>
@@ -76,10 +79,11 @@
                 android:background="@drawable/alarm" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Alighting Alarm"
+                android:textAlignment="center"
                 android:textColor="@color/white" />
 
             <Button
@@ -90,10 +94,11 @@
                 android:background="@drawable/profile" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="My Profile"
+                android:textAlignment="center"
                 android:textColor="@color/white" />
 
         </LinearLayout>
