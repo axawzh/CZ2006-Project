@@ -1,6 +1,8 @@
 package com.klipspringercui.sgbusgo;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -201,11 +203,21 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
     }
 
     Button.OnClickListener CancelOnClickListener = new Button.OnClickListener(){
+
+        /**
+         * Cancel current trip and synchronize local storage.
+         * @param v
+         */
         @Override
         public void onClick(View v) {
             Toast.makeText(CurrentTripActivity.this, "Trip canceled", Toast.LENGTH_SHORT).show();
-            LocationHandler.getInstance().cancelAlightingAlarm(getApplicationContext());
+            removeAlightingAlarm();
+            SharedPreferences mSharedPreference = getSharedPreferences(BaseActivity.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+            SharedPreferences.Editor editor = mSharedPreference.edit();
+            editor.putBoolean(BaseActivity.ALIGHTING_ALARM_ADDED, false);
+            editor.apply();
             LocalDB.getInstance().setCurrentTrip(null);
+            LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
             finish();
         }
     };
@@ -283,6 +295,22 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    private void removeAlightingAlarm() {
+        if (!mGoogleApiClient.isConnected()) {
+            Log.e(TAG, "setAlightingAlarm: client not connected");
+            return;
+        }
+        try {
+            PendingIntent currentPendingIntent = LocalDB.getInstance().getAlightingAlarmPendingIntent();
+            if (currentPendingIntent != null) {
+                LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, currentPendingIntent);
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "setAlightingAlarm: Geofencing security exception");
+            e.printStackTrace();
+        }
     }
 
 

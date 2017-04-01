@@ -7,9 +7,12 @@ package com.klipspringercui.sgbusgo;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -22,9 +25,26 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.GeofencingApi;
+import com.google.android.gms.maps.model.LatLng;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.klipspringercui.sgbusgo.FareCalculatorActivity.FC_SELECTED_BUSSTOP;
 
-public class AlightingAlarmActivity extends BaseActivity {
+public class AlightingAlarmActivity extends BaseActivity implements
+        ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status>{
 
     private static final String TAG = "AlightingAlarmActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -32,7 +52,10 @@ public class AlightingAlarmActivity extends BaseActivity {
     static final String AA_SELECTED_BUSSTOP = "ALARM SELECTED BUS STOP";
     static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
     static final String ACTION_PROXIMITY_ALERT = "com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT";
-    static final String ALIGHTING_BUSSTOP = "ARRIVAL_BUSSTOP_DESCRIPTION";
+
+    private static final float RADIUS = 100.0f;
+    private static final long EXPIRATION = 3600000;
+
 
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;
@@ -40,6 +63,14 @@ public class AlightingAlarmActivity extends BaseActivity {
     Button btnAASelectBusStop;
     Button btnSetAlightingAlarm;
     TextView textAASelectedBusStop;
+
+
+    protected GoogleApiClient mGoogleApiClient;
+    private boolean alightingAlertAdded;
+    private Geofence alightingAlertGeofence;
+    private SharedPreferences mSharedPreferences;
+    private PendingIntent alightingAlarmPendingIntent;
+
 
 
     @Override
@@ -65,13 +96,22 @@ public class AlightingAlarmActivity extends BaseActivity {
             }
         });
 
-
         textAASelectedBusStop = (TextView) findViewById(R.id.txtAASelectedBusStop);
         btnAASelectBusStop = (Button) findViewById(R.id.btnAASelectBusStop);
         btnAASelectBusStop.setOnClickListener(busStopOnClickListener);
 
         btnSetAlightingAlarm = (Button) findViewById(R.id.btnSetAlightingAlarm);
         btnSetAlightingAlarm.setOnClickListener(setAlarmOnClickListener);
+
+        alightingAlarmPendingIntent = null;
+        mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        alightingAlertAdded = mSharedPreferences.getBoolean(ALIGHTING_ALARM_ADDED, false);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     Button.OnClickListener busStopOnClickListener = new Button.OnClickListener(){
@@ -89,7 +129,10 @@ public class AlightingAlarmActivity extends BaseActivity {
                 Toast.makeText(AlightingAlarmActivity.this, "Please select a bus stop", Toast.LENGTH_SHORT).show();
                 return;
             }
-            setAlarm();
+            PendingIntent currentPendingIntent = LocalDB.getInstance().getAlightingAlarmPendingIntent();
+            if (currentPendingIntent != null)
+                removeAlightingAlarm();
+            setAlightingAlarm();
         }
     };
 
@@ -152,5 +195,125 @@ public class AlightingAlarmActivity extends BaseActivity {
         //getApplicationContext().sendBroadcast(intent);
         LocationHandler.getInstance().setAlightingAlarm(getApplicationContext(), latitude, longitude, pendingIntent);
         LocalDB.getInstance().setCurrentTrip(new CurrentTrip(selectedBusStop));
+    }
+
+    private void setAlightingAlarm() {
+        Log.d(TAG, "setAlightingAlarm: starts");
+        if (!mGoogleApiClient.isConnected()) {
+            Log.e(TAG, "setAlightingAlarm: client not connected");
+            return;
+        }
+        try {
+            Geofence.Builder builder = new Geofence.Builder()
+                    .setCircularRegion(selectedBusStop.getLatitude(),
+                            selectedBusStop.getLongitude(), RADIUS)
+                    .setExpirationDuration(EXPIRATION)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                    .setRequestId(selectedBusStop.getDescription());
+
+            PendingIntent currentPendingIntent = getGeofencePendingIntent();
+            LocalDB.getInstance().setAlightingAlarmPendingIntent(currentPendingIntent);
+            alightingAlarmPendingIntent = currentPendingIntent;
+            LocationServices.GeofencingApi.addGeofences(mGoogleApiClient,
+                    getGeofencingRequest(builder.build()),currentPendingIntent).setResultCallback(this);
+        } catch (SecurityException e) {
+            Log.e(TAG, "setAlightingAlarm: Geofencing security exception");
+            e.printStackTrace();
+        }
+    }
+
+    private void removeAlightingAlarm() {
+        Log.d(TAG, "removeAlightingAlarm:");
+        if (!mGoogleApiClient.isConnected()) {
+            Log.e(TAG, "setAlightingAlarm: client not connected");
+            return;
+        }
+        try {
+
+            PendingIntent currentPendingIntent = LocalDB.getInstance().getAlightingAlarmPendingIntent();
+            if (currentPendingIntent != null) {
+                LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, currentPendingIntent);
+                LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "setAlightingAlarm: Geofencing security exception");
+            e.printStackTrace();
+        }
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+
+        Intent intent = new Intent(this, ProximityIntentService.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(ALIGHTING_BUSSTOP, selectedBusStop.getDescription());
+        intent.putExtras(bundle);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        return PendingIntent.getService(this, REQUEST_ALIGHTING_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        
+    }
+
+    /**
+     * Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
+     * Also specifies how the geofence notifications are initially triggered.
+     */
+    private GeofencingRequest getGeofencingRequest(Geofence geofence) {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+
+        // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
+        // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
+        // is already inside that geofence.
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+
+        // Add the geofences to be monitored by geofencing service.
+        builder.addGeofence(geofence);
+
+        // Return a GeofencingRequest.
+        return builder.build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "onConnected: ");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "onConnectionSuspended: ");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, "onConnectionFailed: ");
+    }
+
+    @Override
+    public void onResult(@NonNull Status status) {
+        if (status.isSuccess()) {
+            Toast.makeText(this, "Alighting Alarm Successfully Added", Toast.LENGTH_SHORT).show();
+            alightingAlertAdded = true;
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(ALIGHTING_ALARM_ADDED, alightingAlertAdded);
+            editor.apply();
+            LocalDB.getInstance().setCurrentTrip(new CurrentTrip(selectedBusStop));
+        } else {
+            alightingAlarmPendingIntent = null;
+            Toast.makeText(this, "Connection Failure, Alighing Alarm not Added", Toast.LENGTH_SHORT).show();
+            LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
+            LocalDB.getInstance().setCurrentTrip(null);
+        }
     }
 }

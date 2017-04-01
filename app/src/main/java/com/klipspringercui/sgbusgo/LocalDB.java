@@ -1,5 +1,7 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.PendingIntent;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -14,11 +16,20 @@ class LocalDB {
     private ArrayList<FareRate> rates = new ArrayList<>();
     private ArrayList<FrequentTrip> frequentTrips = new ArrayList<>();
     private CurrentTrip currentTrip = null;
+    private PendingIntent alightingAlarmPendingIntent = null;
 
     private static final LocalDB holder = new LocalDB();
 
     public static LocalDB getInstance() {
         return holder;
+    }
+
+    public PendingIntent getAlightingAlarmPendingIntent() {
+        return alightingAlarmPendingIntent;
+    }
+
+    public void setAlightingAlarmPendingIntent(PendingIntent alightingAlarmPendingIntent) {
+        this.alightingAlarmPendingIntent = alightingAlarmPendingIntent;
     }
 
     public void setFrequentTripsData(ArrayList<FrequentTrip> data) {

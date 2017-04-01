@@ -3,9 +3,13 @@ package com.klipspringercui.sgbusgo;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,6 +17,11 @@ import android.widget.Toast;
 /**
  * Created by Kevin on 29/3/17.
  */
+
+
+import com.google.android.gms.common.ConnectionResult;
+
+import java.util.List;
 
 class LocationHandler {
 
@@ -25,6 +34,10 @@ class LocationHandler {
 
     private static LocationHandler handler = new LocationHandler();
     private PendingIntent currentPending = null;
+
+
+
+
 
     public static LocationHandler getInstance() {
         return handler;
