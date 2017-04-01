@@ -56,10 +56,10 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
     Button btnFC = null;
     Button btnMP = null;
 
-    Button btnTestUpdate = null;
-    Button btnTestUpload = null;
-    Button btnTestDownload = null;
-    Button btnTestFireDownload = null;
+//    Button btnTestUpdate = null;
+//    Button btnTestUpload = null;
+//    Button btnTestDownload = null;
+//    Button btnTestFireDownload = null;
 
     private boolean[] reloadFlags;
     private FirebaseAuth mAuth;
@@ -101,15 +101,16 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         btnAA.setOnClickListener(mainActivityButtonListener);
         btnMP.setOnClickListener(mainActivityButtonListener);
 
-        btnTestUpdate = (Button) findViewById(R.id.btnTestUpdate);
-        btnTestDownload = (Button) findViewById(R.id.btnTestDownload);
-        btnTestUpload = (Button) findViewById(R.id.btnTestUpload);
-        btnTestFireDownload = (Button) findViewById(R.id.btnTestFireDownload);
+        // For testing
+//        btnTestUpdate = (Button) findViewById(R.id.btnTestUpdate);
+//        btnTestDownload = (Button) findViewById(R.id.btnTestDownload);
+//        btnTestUpload = (Button) findViewById(R.id.btnTestUpload);
+//        btnTestFireDownload = (Button) findViewById(R.id.btnTestFireDownload);
 
-        btnTestFireDownload.setOnClickListener(testOnClickListener);
-        btnTestDownload.setOnClickListener(testOnClickListener);
-        btnTestUpdate.setOnClickListener(testOnClickListener);
-        btnTestUpload.setOnClickListener(testOnClickListener);
+//        btnTestFireDownload.setOnClickListener(testOnClickListener);
+//        btnTestDownload.setOnClickListener(testOnClickListener);
+//        btnTestUpdate.setOnClickListener(testOnClickListener);
+//        btnTestUpload.setOnClickListener(testOnClickListener);
 
         mAuth = FirebaseAuth.getInstance();
 
