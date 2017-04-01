@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -21,17 +22,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
                 android:padding="4dp"
-                android:text="BusStop"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                tools:text="BusStop" />
 
             <TextView
                 android:id="@+id/txtETADServiceNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Service"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="Service" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,9 +47,9 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:padding="4dp"
-                    android:text="ETA1"
                     android:textAlignment="textStart"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:text="ETA1" />
 
                 <TextView
                     android:id="@+id/txtETADSub"
@@ -57,9 +58,9 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:padding="4dp"
-                    android:text="ETA2"
                     android:textAlignment="textStart"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:text="ETA2" />
 
                 <TextView
                     android:id="@+id/txtETADSub3"
@@ -68,9 +69,9 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:padding="4dp"
-                    android:text="ETA3"
                     android:textAlignment="textStart"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:text="ETA3" />
 
             </LinearLayout>
 

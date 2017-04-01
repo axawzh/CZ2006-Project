@@ -102,9 +102,12 @@ public class ProximityIntentService extends IntentService {
                     .setContentTitle("You are about to arrive!")
                     .setContentText("approaching " + description)
                     .setPriority(Notification.PRIORITY_HIGH);
-            Intent resultIntent = new Intent(getApplicationContext(), AlightingAlarmActivity.class);
+            Intent resultIntent = new Intent(getApplicationContext(), CurrentTripActivity.class);
+            Bundle bundle2 = new Bundle();
+            bundle.putBoolean(BaseActivity.AA_FROM_NOTIFICATION, true);
+            resultIntent.putExtras(bundle2);
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-            stackBuilder.addParentStack(AlightingAlarmActivity.class);
+            stackBuilder.addParentStack(CurrentTripActivity.class);
             stackBuilder.addNextIntent(resultIntent);
             PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
             nBuilder.setContentIntent(resultPendingIntent);

@@ -57,7 +57,7 @@ class ETADRecyclerViewAdapter extends RecyclerView.Adapter<ETADRecyclerViewAdapt
     @Override
     public void onBindViewHolder(ETAViewHolder holder, int position) {
         if (this.etas == null || this.etas.size() == 0) {
-            holder.txtBusServiceNo.setText("You haven't set any frequent trip yet");
+            holder.txtBusStop.setText(R.string.empty_eta_list_message);
             return;
         }
         if (this.etas != null) {

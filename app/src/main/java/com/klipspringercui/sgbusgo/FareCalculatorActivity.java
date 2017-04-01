@@ -11,11 +11,17 @@ import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.klipspringercui.sgbusgo.R.id.txtFCSelectedAlightingBusStop;
+import static com.klipspringercui.sgbusgo.R.id.txtFCSelectedBusService;
+import static com.klipspringercui.sgbusgo.R.id.txtFCSelectedStartingBusStop;
+import static com.klipspringercui.sgbusgo.R.id.txtFareResult;
 
 
 public class FareCalculatorActivity extends BaseActivity implements GetJSONFareRateData.FareRateDataAvailableCallable {
@@ -28,17 +34,13 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
     private BusStop selectedAlightingBusStop = null;
     private String selectedBusService = null;
 
-    TextView txtFCSelectedStartingBusStop = null;
+
     Button btnFCSelectStartingBusStop = null;
-    TextView txtFCSelectedAlightingBusStop = null;
     Button btnFCSelectAlightingBusStop = null;
-    TextView txtFCSelectedBusService = null;
     Button btnFCSelectBusService = null;
 
     Button btnCalculate = null;
 
-    TextView txtFareResult = null;
-    
     private ArrayList<FareRate> rates;
     boolean btnBusStopEnabled = false;
     boolean btnCalculateEnabled = false;
@@ -68,10 +70,10 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
             }
         });
         
-        this.txtFCSelectedStartingBusStop = (TextView) findViewById(R.id.txtFCSelectedStartingBusStop);
-        this.txtFCSelectedAlightingBusStop = (TextView) findViewById(R.id.txtFCSelectedAlightingBusStop);
-        this.txtFCSelectedBusService = (TextView) findViewById(R.id.txtFCSelectedBusService);
-        this.txtFareResult = (TextView) findViewById(R.id.txtFareResult);
+        //this.txtFCSelectedStartingBusStop = (TextView) findViewById(R.id.txtFCSelectedStartingBusStop);
+        //this.txtFCSelectedAlightingBusStop = (TextView) findViewById(R.id.txtFCSelectedAlightingBusStop);
+        //this.txtFCSelectedBusService = (TextView) findViewById(R.id.txtFCSelectedBusService);
+        //this.txtFareResult = (TextView) findViewById(R.id.txtFareResult);
 
         this.btnFCSelectStartingBusStop = (Button) findViewById(R.id.btnFCSelectStartingBusStop);
         this.btnFCSelectAlightingBusStop = (Button) findViewById(R.id.btnFCSelectAlightingBusStop);
@@ -94,6 +96,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
                 Toast.makeText(FareCalculatorActivity.this, "Please Select a Bus Service First", Toast.LENGTH_SHORT).show();
                 return;
             }
+            btnCalculate.setText(R.string.btn_calculate_text);
             int id = v.getId();
             Intent intent = new Intent(FareCalculatorActivity.this, BusStopSelectionActivity.class);
             Bundle bundle = new Bundle();
@@ -111,6 +114,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
     Button.OnClickListener busServiceOnClickListener = new Button.OnClickListener(){
         @Override
         public void onClick(View v) {
+            btnCalculate.setText(R.string.btn_calculate_text);
             Intent intent = new Intent(FareCalculatorActivity.this, BusServiceSelectionActivity.class);
             startActivityForResult(intent, REQUEST_BUSSERVICE);
         }
@@ -128,8 +132,12 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
             for (int i = 0; i < rates.size(); i++) {
                 if (rates.get(i).getDistanceUp() > distance) {
                     Log.d(TAG, "onClick: fare " + rates.get(i).getRateAdult());
-                    String result = "Total Fare: $" + (double) Math.round(rates.get(i).getRateAdult()) / 100;
-                    txtFareResult.setText(result);
+                    String result;
+                    if (distance == 0)
+                        result = "Total Fare: $0.00";
+                    else
+                        result = "Total Fare: $" + (double) Math.round(rates.get(i).getRateAdult()) / 100;
+                    btnCalculate.setText(result);
                     break;
                 }
             }
@@ -173,17 +181,19 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
                 switch(requestCode) {
                     case REQUEST_BUSSTOP:
                         selectedStartingBusStop = (BusStop) bundle.getSerializable(FC_SELECTED_BUSSTOP);
-                        txtFCSelectedStartingBusStop.setText(selectedStartingBusStop.getDescription());
+                        btnFCSelectStartingBusStop.setText(selectedStartingBusStop.getDescription());
                         break;
                     case REQUEST_BUSSTOP_B:
                         selectedAlightingBusStop = (BusStop) bundle.getSerializable(FC_SELECTED_BUSSTOP);
-                        txtFCSelectedAlightingBusStop.setText(selectedAlightingBusStop.getDescription());
+                        btnFCSelectAlightingBusStop.setText(selectedAlightingBusStop.getDescription());
                         break;
                     case REQUEST_BUSSERVICE:
                         selectedBusService = bundle.getString(FC_SELECTED_BUSSERVICENO);
-                        txtFCSelectedBusService.setText(selectedBusService);
+                        btnFCSelectBusService.setText(selectedBusService);
                         selectedStartingBusStop = null;
+                        btnFCSelectStartingBusStop.setText(R.string.start_bus_stop_txt);
                         selectedAlightingBusStop = null;
+                        btnFCSelectAlightingBusStop.setText(R.string.alight_bus_stop_txt);
                         btnBusStopEnabled = true;
                         break;
                     default:

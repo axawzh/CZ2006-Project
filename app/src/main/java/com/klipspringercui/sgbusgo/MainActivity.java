@@ -1,8 +1,10 @@
 package com.klipspringercui.sgbusgo;
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -163,6 +165,21 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
                     }
                 });
+
+        SharedPreferences mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        boolean alightingAlertAdded = mSharedPreferences.getBoolean(ALIGHTING_ALARM_ADDED, false);
+        CurrentTrip currentTrip = LocalDB.getInstance().getCurrentTrip();
+        if (currentTrip == null && alightingAlertAdded) {
+            Log.d(TAG, "onCreate: recovering current trip from storage");
+            double latitude = (double) mSharedPreferences.getFloat(AA_DESTINATION_LATITUDE, 0);
+            double longitude = (double) mSharedPreferences.getFloat(AA_DESTINATION_LONGITUDE, 0);
+            String description = mSharedPreferences.getString(ALIGHTING_BUSSTOP, null);
+            if (latitude != 0 && longitude != 0 && description != null) {
+                LocalDB.getInstance().setCurrentTrip(new CurrentTrip(
+                        new BusStop(null, null, description, latitude, longitude)));
+                LocalDB.getInstance().setAlightingAlarmPendingIntent(getGeofencePendingIntent(description));
+            }
+        }
     }
 
     Button.OnClickListener mainActivityButtonListener = new Button.OnClickListener(){
@@ -424,6 +441,18 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         LocalDB.getInstance().setBusStopsData(busStopsList);
     }
 
+    private PendingIntent getGeofencePendingIntent(String description) {
+        // Reuse the PendingIntent if we already have it.
+
+        Intent intent = new Intent(this, ProximityIntentService.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(ALIGHTING_BUSSTOP, description);
+        intent.putExtras(bundle);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        return PendingIntent.getService(this, REQUEST_ALIGHTING_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
     private void showLoadingDialog() {
         if (loadingDialog != null && loadingDialog.isShowing())
             return;
@@ -452,4 +481,5 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
         if (downloadDialog != null && downloadDialog.isShowing())
             downloadDialog.dismiss();
     }
+
 }

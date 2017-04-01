@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 import static com.klipspringercui.sgbusgo.FareCalculatorActivity.FC_SELECTED_BUSSTOP;
 
@@ -53,7 +54,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
     static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
     static final String ACTION_PROXIMITY_ALERT = "com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT";
 
-    private static final float RADIUS = 100.0f;
+    private static final float RADIUS = 300.0f;
     private static final long EXPIRATION = 3600000;
 
 
@@ -69,7 +70,6 @@ public class AlightingAlarmActivity extends BaseActivity implements
     private boolean alightingAlertAdded;
     private Geofence alightingAlertGeofence;
     private SharedPreferences mSharedPreferences;
-    private PendingIntent alightingAlarmPendingIntent;
 
 
 
@@ -103,9 +103,19 @@ public class AlightingAlarmActivity extends BaseActivity implements
         btnSetAlightingAlarm = (Button) findViewById(R.id.btnSetAlightingAlarm);
         btnSetAlightingAlarm.setOnClickListener(setAlarmOnClickListener);
 
-        alightingAlarmPendingIntent = null;
         mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
         alightingAlertAdded = mSharedPreferences.getBoolean(ALIGHTING_ALARM_ADDED, false);
+        CurrentTrip currentTrip = LocalDB.getInstance().getCurrentTrip();
+        if (currentTrip == null && alightingAlertAdded) {
+            double latitude = (double) mSharedPreferences.getFloat(AA_DESTINATION_LATITUDE, 0);
+            double longitude = (double) mSharedPreferences.getFloat(AA_DESTINATION_LONGITUDE, 0);
+            String description = mSharedPreferences.getString(ALIGHTING_BUSSTOP, null);
+            if (latitude != 0 && longitude != 0 && description != null) {
+                LocalDB.getInstance().setCurrentTrip(new CurrentTrip(
+                        new BusStop(null, null, description, latitude, longitude)));
+                LocalDB.getInstance().setAlightingAlarmPendingIntent(getGeofencePendingIntent(description));
+            }
+        }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -145,6 +155,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     android.Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
+
     }
 
     @Override
@@ -213,7 +224,6 @@ public class AlightingAlarmActivity extends BaseActivity implements
 
             PendingIntent currentPendingIntent = getGeofencePendingIntent();
             LocalDB.getInstance().setAlightingAlarmPendingIntent(currentPendingIntent);
-            alightingAlarmPendingIntent = currentPendingIntent;
             LocationServices.GeofencingApi.addGeofences(mGoogleApiClient,
                     getGeofencingRequest(builder.build()),currentPendingIntent).setResultCallback(this);
         } catch (SecurityException e) {
@@ -229,12 +239,14 @@ public class AlightingAlarmActivity extends BaseActivity implements
             return;
         }
         try {
-
             PendingIntent currentPendingIntent = LocalDB.getInstance().getAlightingAlarmPendingIntent();
             if (currentPendingIntent != null) {
                 LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, currentPendingIntent);
                 LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
             }
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(ALIGHTING_ALARM_ADDED, alightingAlertAdded);
+            editor.apply();
         } catch (SecurityException e) {
             Log.e(TAG, "setAlightingAlarm: Geofencing security exception");
             e.printStackTrace();
@@ -251,7 +263,18 @@ public class AlightingAlarmActivity extends BaseActivity implements
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
         return PendingIntent.getService(this, REQUEST_ALIGHTING_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        
+    }
+
+    private PendingIntent getGeofencePendingIntent(String description) {
+        // Reuse the PendingIntent if we already have it.
+
+        Intent intent = new Intent(this, ProximityIntentService.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(ALIGHTING_BUSSTOP, description);
+        intent.putExtras(bundle);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        return PendingIntent.getService(this, REQUEST_ALIGHTING_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -307,10 +330,12 @@ public class AlightingAlarmActivity extends BaseActivity implements
             alightingAlertAdded = true;
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(ALIGHTING_ALARM_ADDED, alightingAlertAdded);
+            editor.putString(ALIGHTING_BUSSTOP, selectedBusStop.getDescription());
+            editor.putFloat(AA_DESTINATION_LATITUDE, (float) selectedBusStop.getLatitude());
+            editor.putFloat(AA_DESTINATION_LONGITUDE, (float) selectedBusStop.getLongitude());
             editor.apply();
             LocalDB.getInstance().setCurrentTrip(new CurrentTrip(selectedBusStop));
         } else {
-            alightingAlarmPendingIntent = null;
             Toast.makeText(this, "Connection Failure, Alighing Alarm not Added", Toast.LENGTH_SHORT).show();
             LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
             LocalDB.getInstance().setCurrentTrip(null);

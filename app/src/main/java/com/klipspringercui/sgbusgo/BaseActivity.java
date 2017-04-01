@@ -26,9 +26,13 @@ public class BaseActivity extends AppCompatActivity {
     static final String SEARCH_MODE = "BUS_STOP_SEARCH_MODE";
     static final String SEARCH_AID = "BUS_STOP_SEARCH_AID";
 
+    // For alighting alarm
     static final String SHARED_PREFERENCE_NAME = "SHARED_PREFERENCE";
     static final String ALIGHTING_ALARM_ADDED = "ALIGHTING ALARM ADDED";
     static final String ALIGHTING_BUSSTOP = "ARRIVAL_BUSSTOP_DESCRIPTION";
+    static final String AA_DESTINATION_LATITUDE = "DESTINATION_LATITUDE";
+    static final String AA_DESTINATION_LONGITUDE = "DESTINATION_LONGITUDE";
+    static final String AA_FROM_NOTIFICATION = "FROM_NOTIFICATION";
 
     // For startActivityForResult
     static final int REQUEST_BUSSTOP = 1;

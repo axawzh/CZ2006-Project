@@ -2,6 +2,7 @@ package com.klipspringercui.sgbusgo;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -41,6 +42,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.vision.text.Text;
 
 import java.util.Locale;
+
+import static com.klipspringercui.sgbusgo.BaseActivity.AA_DESTINATION_LATITUDE;
+import static com.klipspringercui.sgbusgo.BaseActivity.AA_DESTINATION_LONGITUDE;
+import static com.klipspringercui.sgbusgo.BaseActivity.ALIGHTING_ALARM_ADDED;
+import static com.klipspringercui.sgbusgo.BaseActivity.ALIGHTING_BUSSTOP;
+import static com.klipspringercui.sgbusgo.BaseActivity.SHARED_PREFERENCE_NAME;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -139,6 +146,7 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
     TextView txtDistance;
 
     private boolean mPermissionDenied = false;
+    private boolean recover;
     private BusStop destination;
     private Location currentLocation;
     private Location destinationLocation;
@@ -173,7 +181,40 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         btnCancel.setOnClickListener(CancelOnClickListener);
 
-        destination = LocalDB.getInstance().getCurrentTrip().getAlightingBusStop();
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+        recover = false;
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            recover = bundle.getBoolean(BaseActivity.AA_FROM_NOTIFICATION);
+        }
+
+        SharedPreferences mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        boolean alightingAlertAdded = mSharedPreferences.getBoolean(ALIGHTING_ALARM_ADDED, false);
+        CurrentTrip currentTrip = LocalDB.getInstance().getCurrentTrip();
+        if (alightingAlertAdded && currentTrip == null)
+            recover = true;
+
+        if (recover) {
+            Log.d(TAG, "onCreate: recover from notification");
+            double latitude = (double) mSharedPreferences.getFloat(AA_DESTINATION_LATITUDE, 0);
+            double longitude = (double) mSharedPreferences.getFloat(AA_DESTINATION_LONGITUDE, 0);
+            String description = mSharedPreferences.getString(ALIGHTING_BUSSTOP, null);
+            if (latitude != 0 && longitude != 0 && description != null) {
+                destination = new BusStop(null, null, description, latitude, longitude);
+            }
+        } else {
+            destination = LocalDB.getInstance().getCurrentTrip().getAlightingBusStop();
+        }
+
         if (destination == null) {
             Toast.makeText(this, "No current trip", Toast.LENGTH_SHORT).show();
             finish();
@@ -192,14 +233,7 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
 
 
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
+
     }
 
     Button.OnClickListener CancelOnClickListener = new Button.OnClickListener(){
@@ -212,9 +246,9 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
         public void onClick(View v) {
             Toast.makeText(CurrentTripActivity.this, "Trip canceled", Toast.LENGTH_SHORT).show();
             removeAlightingAlarm();
-            SharedPreferences mSharedPreference = getSharedPreferences(BaseActivity.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+            SharedPreferences mSharedPreference = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
             SharedPreferences.Editor editor = mSharedPreference.edit();
-            editor.putBoolean(BaseActivity.ALIGHTING_ALARM_ADDED, false);
+            editor.putBoolean(ALIGHTING_ALARM_ADDED, false);
             editor.apply();
             LocalDB.getInstance().setCurrentTrip(null);
             LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
@@ -225,6 +259,16 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (recover) {
+            SharedPreferences mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(ALIGHTING_ALARM_ADDED, false);
+            editor.apply();
+            LocalDB.getInstance().setCurrentTrip(null);
+            LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
+            return;
+        }
         BusStop altDestination = LocalDB.getInstance().getCurrentTrip().getAlightingBusStop();
         if (altDestination == null || altDestination.getDescription() == null)
             finish();
@@ -238,6 +282,7 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
             String destinationText = "To: " + destination.getDescription();
             txtDestination.setText(destinationText);
         }
+
 
     }
 
