@@ -144,7 +144,7 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
         }
     }
 
-    private ArrayList<FrequentTrip> getSavedFrequentTripList(String fileName) {
+    public ArrayList<FrequentTrip> getSavedFrequentTripList(String fileName) {
         ArrayList<FrequentTrip> result = new ArrayList<FrequentTrip>();
         FileInputStream fis;
         ObjectInputStream ois;
