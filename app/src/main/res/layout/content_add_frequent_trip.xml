@@ -1,144 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_add_frequent_trip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackGround"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:paddingBottom="8dp"
+    android:paddingEnd="4dp"
+    android:paddingStart="4dp"
+    android:paddingTop="8dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.klipspringercui.sgbusgo.AddFrequentTripActivity"
     tools:showIn="@layout/activity_add_frequent_trip">
 
-    <Button
-        android:text="Select Starting Bus Stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnFTSelectStartingBusStop"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="16dp"
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/txtFTStartingSelectedBusStop"
-        app:layout_constraintHorizontal_bias="0.504" />
+        android:padding="16dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/bus_icon" />
 
-    <TextView
-        android:id="@+id/txtFTStartingSelectedBusStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Selected Starting Bus Stop"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFTSelectBusService" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/itemBackGround"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingRight="16dp">
 
-    <TextView
-        android:id="@+id/txtFTSelectedBusService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="32dp"
-        android:text="Selected Bus Service No"
-        android:textSize="24sp"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_weight="0"
+            android:src="@drawable/bus_small" />
 
-    <Button
-        android:id="@+id/btnFTSelectBusService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="SELECT BUS SERVICE"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtFTSelectedBusService"
-        app:layout_constraintHorizontal_bias="0.502" />
+        <Button
+            android:id="@+id/btnFTSelectBusService"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@color/itemBackGround"
+            android:elevation="0dp"
+            android:fontFamily="sans-serif"
+            android:text="@string/bus_service_no"
+            android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="#D8D8D8"
+            android:textSize="18sp" />
+
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/arrow_right" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="#474F6E"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingRight="16dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="20dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_weight="0"
+            android:src="@drawable/start_empty" />
+
+        <Button
+            android:id="@+id/btnFTSelectStartingBusStop"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@color/itemBackGround"
+            android:fontFamily="sans-serif"
+            android:text="@string/select_start_bus_stop"
+            android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="#D8D8D8"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/arrow_right" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="#474F6E"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingRight="16dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="20dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_weight="0"
+            android:src="@drawable/end" />
+
+        <Button
+            android:id="@+id/btnFTSelectAlightingBusStop"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@color/itemBackGround"
+            android:fontFamily="sans-serif"
+            android:text="@string/select_alight_bus_stop"
+            android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="#D8D8D8"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/arrow_right" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="#474F6E"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingRight="16dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="20dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="30dp"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/alarm_icon" />
+
+        <Button
+            android:id="@+id/btnFTSetTime"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@color/itemBackGround"
+            android:fontFamily="sans-serif"
+            android:text="Set Time"
+            android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="#D8D8D8"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/arrow_right" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnSaveTrip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_green"
+        android:fontFamily="sans-serif"
         android:text="Save Frequent Trip"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/greenButtonTextColor"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <TextView
-        android:id="@+id/txtFTAlightingSelectedBusStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Selected Alighting Bus Stop"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFTSelectStartingBusStop" />
 
-    <Button
-        android:id="@+id/btnFTSelectAlightingBusStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="SELECT ALIGHTING BUS STOP"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtFTAlightingSelectedBusStop"
-        app:layout_constraintHorizontal_bias="0.502" />
-
-    <TextView
-        android:id="@+id/txtFTSetTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="When you want to start this trip"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFTSelectAlightingBusStop" />
-
-    <Button
-        android:id="@+id/btnFTSetTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="SET TIME"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtFTSetTime"
-        app:layout_constraintHorizontal_bias="0.502" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

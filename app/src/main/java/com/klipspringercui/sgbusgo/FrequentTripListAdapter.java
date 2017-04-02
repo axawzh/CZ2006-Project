@@ -3,23 +3,20 @@ package com.klipspringercui.sgbusgo;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.klipspringercui.sgbusgo.BaseActivity.ACTIVATED_FREQUENT_TRIP_FILENAME;
 
@@ -46,33 +43,45 @@ class FrequentTripListAdapter extends ArrayAdapter<FrequentTrip>{
         if (v == null) {
             LayoutInflater vi;
             vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.content_frequenttrip_listview_row, parent, false);
+            v = vi.inflate(R.layout.frequent_trip_browse, parent, false);
         }
 
         FrequentTrip p = getItem(position);
+        FrequentTrip activated_ft = getActivatedFrequentTrip();
 
         if (p != null) {
-            TextView tt1 = (TextView) v.findViewById(R.id.textTime);
-            TextView tt2 = (TextView) v.findViewById(R.id.textBusStop);
-            defaultTextColor = tt2.getTextColors();
+            TextView txtTime = (TextView) v.findViewById(R.id.textTime);
+            TextView txtStartBusStop = (TextView) v.findViewById(R.id.txtStartBusStop);
+            TextView txtAlightBusStop = (TextView) v.findViewById(R.id.txtAlightBusStop);
+            TextView txtBusService = (TextView) v.findViewById(R.id.txtBusService);
 
-            if (tt1 != null) {
-                tt1.setText(p.getTime());
-                FrequentTrip activated_ft = getActivatedFrequentTrip();
+            defaultTextColor = txtAlightBusStop.getTextColors();
+
+            if (txtTime != null) {
+                txtTime.setText(p.getTime());
                 if (activated_ft != null && activated_ft.getId() == p.getId()) {
                     // Set the time color to green to indicate it is activated
-                    tt1.setTextColor(Color.parseColor("#33e550"));
+                    txtTime.setTextColor(Color.parseColor("#61DB49"));
                 } else {
-                    tt1.setTextColor(defaultTextColor);
+                    txtTime.setTextColor(defaultTextColor);
                 }
             }
-
-            if (tt2 != null) {
-                tt2.setText("Alight at: " + p.getAlightingBusStop().getDescription());
-            }
+            String displayText = "From: " + p.getStartingBusStop().getDescription();
+            if (displayText.length() > 22)
+                displayText = displayText.substring(0,22);
+            String displayText2 = "To: " + p.getAlightingBusStop().getDescription();
+            if (displayText2.length() > 22)
+                displayText2 = displayText2.substring(0,22);
+            txtStartBusStop.setText(displayText);
+            txtAlightBusStop.setText(displayText2);
+            txtBusService.setText(String.format("Service No: %s", p.getServiceNo()));
         }
-
         return v;
+    }
+
+    public void loadNewData(ArrayList<FrequentTrip> data) {
+        this.listFT = data;
+        notifyDataSetChanged();
     }
 
     private FrequentTrip getActivatedFrequentTrip() {
@@ -83,6 +92,8 @@ class FrequentTripListAdapter extends ArrayAdapter<FrequentTrip>{
             result = (FrequentTrip) ois.readObject();
             ois.close();
             fis.close();
+        } catch (FileNotFoundException e) {
+            return null;
         } catch (IOException e) {
             Log.d(TAG, "getActivatedFT: IO Exception");
             e.printStackTrace();

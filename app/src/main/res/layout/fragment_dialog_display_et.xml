@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackGround"
     tools:context="com.klipspringercui.sgbusgo.DialogDisplayETA">
 
     <!-- TODO: Update blank fragment layout -->
@@ -14,11 +15,15 @@
 
         <ImageButton
             android:id="@+id/btnETARefresh"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            style="@style/Base.Widget.AppCompat.Button.Small"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="right"
+            android:layout_margin="4dp"
+            android:layout_marginRight="4dp"
+            android:background="@color/itemBackGround"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/refresh_grey" />
+            app:srcCompat="@drawable/refresh_silver" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_ETAD"

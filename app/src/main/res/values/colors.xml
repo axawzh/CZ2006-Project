@@ -5,11 +5,12 @@
     <color name="colorAccent">#FF4081</color>
     <color name="black_overlay">#66000000</color>
     <color name="colorBackGround">#374063</color>
+    <color name="colorBackGround2">#323a5b</color>
     <color name="itemBackGround">#474f6e</color>
-    <color name="greenButtonTextColor">#117382</color>
+    <color name="greenButtonTextColor">#17626e</color>
     <color name="greyText">#D8D8D8</color>
     <color name="yellowButtonTextColor">#DE622F</color>
-    <color name="backGroundRed">#f65d62</color>
+    <color name="backGroundRed">#bc88d6</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
 </resources>

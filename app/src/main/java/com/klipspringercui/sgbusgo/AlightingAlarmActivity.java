@@ -54,16 +54,14 @@ public class AlightingAlarmActivity extends BaseActivity implements
     static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
     static final String ACTION_PROXIMITY_ALERT = "com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT";
 
-    private static final float RADIUS = 300.0f;
+    private static final float RADIUS = 550.0f;
     private static final long EXPIRATION = 3600000;
 
 
     private BusStop selectedBusStop = null;
-    private String selectedBusService = null;
 
     Button btnAASelectBusStop;
     Button btnSetAlightingAlarm;
-    TextView textAASelectedBusStop;
 
 
     protected GoogleApiClient mGoogleApiClient;
@@ -96,7 +94,6 @@ public class AlightingAlarmActivity extends BaseActivity implements
             }
         });
 
-        textAASelectedBusStop = (TextView) findViewById(R.id.txtAASelectedBusStop);
         btnAASelectBusStop = (Button) findViewById(R.id.btnAASelectBusStop);
         btnAASelectBusStop.setOnClickListener(busStopOnClickListener);
 
@@ -127,6 +124,8 @@ public class AlightingAlarmActivity extends BaseActivity implements
     Button.OnClickListener busStopOnClickListener = new Button.OnClickListener(){
         @Override
         public void onClick(View v) {
+            btnAASelectBusStop.setText(R.string.select_bus_stop_btntxt);
+            selectedBusStop = null;
             Intent intent = new Intent(AlightingAlarmActivity.this, BusStopSelectionActivity.class);
             startActivityForResult(intent, 0);
         }
@@ -140,6 +139,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
                 return;
             }
             PendingIntent currentPendingIntent = LocalDB.getInstance().getAlightingAlarmPendingIntent();
+            Toast.makeText(AlightingAlarmActivity.this, R.string.alighting_alarm_success, Toast.LENGTH_SHORT).show();
             if (currentPendingIntent != null)
                 removeAlightingAlarm();
             setAlightingAlarm();
@@ -165,7 +165,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
             Bundle bundle = data.getExtras();
             if (bundle != null) {
                 selectedBusStop = (BusStop) bundle.getSerializable(AA_SELECTED_BUSSTOP);
-                textAASelectedBusStop.setText(selectedBusStop.getDescription());
+                btnAASelectBusStop.setText(selectedBusStop.getDescription());
             }
         }
     }
@@ -326,7 +326,6 @@ public class AlightingAlarmActivity extends BaseActivity implements
     @Override
     public void onResult(@NonNull Status status) {
         if (status.isSuccess()) {
-            Toast.makeText(this, "Alighting Alarm Successfully Added", Toast.LENGTH_SHORT).show();
             alightingAlertAdded = true;
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(ALIGHTING_ALARM_ADDED, alightingAlertAdded);
@@ -335,8 +334,10 @@ public class AlightingAlarmActivity extends BaseActivity implements
             editor.putFloat(AA_DESTINATION_LONGITUDE, (float) selectedBusStop.getLongitude());
             editor.apply();
             LocalDB.getInstance().setCurrentTrip(new CurrentTrip(selectedBusStop));
+            Intent intent = new Intent(this, CurrentTripActivity.class);
+            startActivity(intent);
         } else {
-            Toast.makeText(this, "Connection Failure, Alighing Alarm not Added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.alighting_alarm_failure, Toast.LENGTH_SHORT).show();
             LocalDB.getInstance().setAlightingAlarmPendingIntent(null);
             LocalDB.getInstance().setCurrentTrip(null);
         }

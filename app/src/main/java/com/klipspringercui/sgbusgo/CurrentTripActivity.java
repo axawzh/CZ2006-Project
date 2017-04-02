@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -144,6 +146,7 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
     Button btnCancel;
     TextView txtDestination;
     TextView txtDistance;
+    TextView txtMessage;
 
     private boolean mPermissionDenied = false;
     private boolean recover;
@@ -157,6 +160,10 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
         setContentView(R.layout.activity_current_trip);
 
@@ -178,6 +185,7 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
 
         txtDistance = (TextView) findViewById(R.id.txt_distance);
         txtDestination = (TextView) findViewById(R.id.txt_destination);
+        txtMessage = (TextView) findViewById(R.id.txt_message);
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         btnCancel.setOnClickListener(CancelOnClickListener);
 
@@ -261,6 +269,9 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
         super.onResume();
 
         if (recover) {
+            txtMessage.setText(R.string.alight_message);
+            btnCancel.setText("FINISH THIS TRIP");
+            btnCancel.setTextColor(Color.parseColor("#33e550"));
             SharedPreferences mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(ALIGHTING_ALARM_ADDED, false);
@@ -296,6 +307,11 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
         else
             displayText = String.format(Locale.getDefault(), "Distance: %.2fm", distance);
         txtDistance.setText(displayText);
+        if (distance < 150.0) {
+            txtMessage.setText(R.string.alight_message);
+            btnCancel.setText("FINISH THIS TRIP");
+            btnCancel.setTextColor(Color.parseColor("#33e550"));
+        }
     }
 
     @Override
@@ -485,4 +501,15 @@ public class CurrentTripActivity extends AppCompatActivity implements OnMapReady
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

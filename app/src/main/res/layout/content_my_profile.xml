@@ -1,67 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:baselineAligned="false">
+    android:background="@color/colorBackGround"
+    android:baselineAligned="false"
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <LinearLayout
+        android:id="@+id/user_account_icon"
         android:name="layout.UserAccountFragment"
         android:layout_width="match_parent"
+        android:background="@color/colorBackGround2"
         android:layout_height="0dp"
-        android:id="@+id/user_account_icon"
         android:layout_weight="1"
         android:orientation="horizontal">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/no_account"
-            android:adjustViewBounds="true"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:layout_marginLeft="16dp"/>
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/no_account" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
+        android:background="@color/colorBackGround2"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="My Frequent Trip"
             android:layout_weight="4"
-            android:textSize="28sp"
             android:gravity="center"
-            android:textStyle="bold"/>
+            android:padding="8dp"
+            android:text="My Frequent Trip"
+            android:textAlignment="viewStart"
+            android:textColor="@color/greyText"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <Button
+            android:id="@+id/btnAddFrequentTrip"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="ADD"
-            android:layout_weight="1"
+            android:layout_marginBottom="8dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:id="@+id/btnAddFrequentTrip"/>
+            android:layout_weight="1"
+            android:background="@color/itemBackGround"
+            android:text="ADD"
+            android:textColor="@color/greyText" />
     </LinearLayout>
 
     <ListView
+        android:id="@+id/listFrequentTrip"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:id="@+id/listFrequentTrip">
-    </ListView>
+        android:background="@color/colorBackGround"></ListView>
 
     <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="3"-->
-        <!--android:text="No Saved Frequent Trip"-->
-        <!--android:textSize="28sp"-->
-        <!--android:id="@+id/emptyListView"/>-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_weight="3"-->
+    <!--android:text="No Saved Frequent Trip"-->
+    <!--android:textSize="28sp"-->
+    <!--android:id="@+id/emptyListView"/>-->
 
 </LinearLayout>

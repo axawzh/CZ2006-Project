@@ -41,12 +41,10 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     private BusStop selectedBusStop = null;
     private String selectedBusService = null;
 
-    Button buttonSelectBusStop = null;
-    TextView textSelectedBusStop = null;
-    Button buttonSelectBusService = null;
-    TextView textSelectedBusService = null;
+    Button btnETASelectBusStop = null;
+    Button btnETASelectBusService = null;
     Button buttonGetETA = null;
-    ConstraintSet mConstraintSet = null;
+
 
     RecyclerView recyclerViewFreq = null;
     ETADRecyclerViewAdapter recyclerViewAdapter;
@@ -55,7 +53,6 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     private int etaObtained;
 
     private long btnLastClickTime = 0;
-
 
 
     @Override
@@ -81,13 +78,11 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
             }
         });
 
-        textSelectedBusStop = (TextView) findViewById(R.id.txtSelectedBusStop);
-        buttonSelectBusStop = (Button) findViewById(R.id.btnSelectBusStop);
-        buttonSelectBusStop.setOnClickListener(busStopOnClickListener);
+        btnETASelectBusStop = (Button) findViewById(R.id.btnETASelectBusStop);
+        btnETASelectBusStop.setOnClickListener(busStopOnClickListener);
 
-        textSelectedBusService = (TextView) findViewById(R.id.txtETASelectedBusService);
-        buttonSelectBusService = (Button) findViewById(R.id.btnETASelectBusService);
-        buttonSelectBusService.setOnClickListener(busServiceOnClickListener);
+        btnETASelectBusService = (Button) findViewById(R.id.btnETASelectBusService);
+        btnETASelectBusService.setOnClickListener(busServiceOnClickListener);
 
         buttonGetETA = (Button) findViewById(R.id.btnGetETA);
         buttonGetETA.setOnClickListener(getETAOnClickListener);
@@ -96,10 +91,6 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
         recyclerViewFreq.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewAdapter = new ETADRecyclerViewAdapter(this.frequentTripETAs, null);
         recyclerViewFreq.setAdapter(recyclerViewAdapter);
-
-        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.content_eta);
-        mConstraintSet = new ConstraintSet();
-        mConstraintSet.clone(layout);
 
         cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -110,6 +101,8 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
         public void onClick(View v) {
             Intent intent = new Intent(ETAActivity.this, BusStopSelectionActivity.class);
             String serviceNo = ETAActivity.this.selectedBusService;
+            btnETASelectBusStop.setText(R.string.select_bus_stop_btntxt);
+            selectedBusStop = null;
             Bundle bundle = new Bundle();
             if (serviceNo != null && serviceNo.length() > 0) {
                 bundle.putInt(SEARCH_MODE, SEARCHMODE_WITHSN);
@@ -125,6 +118,8 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     Button.OnClickListener busServiceOnClickListener = new Button.OnClickListener(){
         @Override
         public void onClick(View v) {
+            btnETASelectBusService.setText(R.string.bus_service_no);
+            selectedBusService = null;
             Intent intent = new Intent(ETAActivity.this, BusServiceSelectionActivity.class);
             startActivityForResult(intent, REQUEST_BUSSERVICE);
         }
@@ -180,15 +175,15 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
             Log.d(TAG, "onActivityResult: bus stop data received");
             if (bundle != null) {
                 selectedBusStop = (BusStop) bundle.getSerializable(ETA_SELECTED_BUSSTOP);
-                textSelectedBusStop.setText(selectedBusStop.getDescription());
+                btnETASelectBusStop.setText(selectedBusStop.getDescription());
             }
         } else if (requestCode == REQUEST_BUSSERVICE && resultCode == RESULT_OK) {
             Bundle bundle = data.getExtras();
             if (bundle != null) {
                 selectedBusService = bundle.getString(ETA_SELECTED_BUSSERVICENO);
-                textSelectedBusService.setText(selectedBusService);
+                btnETASelectBusService.setText(selectedBusService);
                 selectedBusStop = null;
-                textSelectedBusStop.setText("Selected Bus Stop");
+                btnETASelectBusStop.setText(R.string.select_bus_stop_btntxt);
             }
         }
 

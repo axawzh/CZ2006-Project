@@ -17,11 +17,29 @@ class LocalDB {
     private ArrayList<FrequentTrip> frequentTrips = new ArrayList<>();
     private CurrentTrip currentTrip = null;
     private PendingIntent alightingAlarmPendingIntent = null;
+    private FrequentTrip activatedFrequentTrip = null;
+    private PendingIntent activatedPendingIntent = null;
 
     private static final LocalDB holder = new LocalDB();
 
     public static LocalDB getInstance() {
         return holder;
+    }
+
+    public FrequentTrip getActivatedFrequentTrip() {
+        return activatedFrequentTrip;
+    }
+
+    public void setActivatedFrequentTrip(FrequentTrip activatedFrequentTrip) {
+        this.activatedFrequentTrip = activatedFrequentTrip;
+    }
+
+    public PendingIntent getActivatedPendingIntent() {
+        return activatedPendingIntent;
+    }
+
+    public void setActivatedPendingIntent(PendingIntent activatedPendingIntent) {
+        this.activatedPendingIntent = activatedPendingIntent;
     }
 
     public PendingIntent getAlightingAlarmPendingIntent() {

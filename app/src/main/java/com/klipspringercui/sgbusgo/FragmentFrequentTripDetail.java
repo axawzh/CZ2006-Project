@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -24,7 +22,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.klipspringercui.sgbusgo.BaseActivity.ACTIVATED_FREQUENT_TRIP_FILENAME;
 import static com.klipspringercui.sgbusgo.BaseActivity.FREQUENT_TRIP_FILENAME;
 
@@ -76,7 +73,7 @@ public class FragmentFrequentTripDetail extends DialogFragment {
         if (dialog != null)
         {
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
             dialog.getWindow().setLayout(width, height);
         }
     }
@@ -92,7 +89,7 @@ public class FragmentFrequentTripDetail extends DialogFragment {
                              Bundle savedInstanceState) {
         ((MyProfileActivity) getActivity()).setActionBarTitle(TRIP_DETAIL);
 
-        View view  = inflater.inflate(R.layout.fragment_fragment_frequent_trip_detail, container, false);
+        View view  = inflater.inflate(R.layout.fragment_frequent_trip_detail, container, false);
 
         tripTime = (TextView) view.findViewById(R.id.frequentTripDetailTime);
         startingBusStop = (TextView) view.findViewById(R.id.startingBusStop) ;
@@ -102,11 +99,11 @@ public class FragmentFrequentTripDetail extends DialogFragment {
         btnDelete = (Button) view.findViewById(R.id.btnFTDetailDelete);
 
         tripTime.setText(ft.getTime());
-        startingBusStop.setText("Starting Bus Stop: " + ft.getStartingBusStop().getDescription());
-        alightingBusStop.setText("Alighting Bus Stop: " + ft.getAlightingBusStop().getDescription());
-        busService.setText("Bus Service: " + ft.getServiceNo());
+        startingBusStop.setText(String.format("From: %s", ft.getStartingBusStop().getDescription()));
+        alightingBusStop.setText(String.format("To: %s", ft.getAlightingBusStop().getDescription()));
+        busService.setText(String.format("Bus Service: %s", ft.getServiceNo()));
 
-        activated_ft = getActivatedFrequentTrip();
+        activated_ft = LocalDB.getInstance().getActivatedFrequentTrip();
         if (activated_ft != null && activated_ft.getId() == ft.getId()) {
             btnActivate.setText("Deactivate");
             btnActivate.setOnClickListener(deactivateOnClickListener);
@@ -123,10 +120,12 @@ public class FragmentFrequentTripDetail extends DialogFragment {
     Button.OnClickListener activateOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             try {
                 FileOutputStream fos = getActivity().openFileOutput(ACTIVATED_FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(ft);
+                LocalDB.getInstance().setActivatedFrequentTrip(ft);
                 oos.close();
                 fos.close();
             } catch (FileNotFoundException e) {
@@ -143,8 +142,9 @@ public class FragmentFrequentTripDetail extends DialogFragment {
     Button.OnClickListener deactivateOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            LocalDB.getInstance().setActivatedFrequentTrip(null);
             try {
-                // Hopefully this will clean the content of the file :)
+                // Overwrite the content of the file :)
                 Log.d(TAG, "FT Detail: deacivate trip -> deleting file content");
                 FileOutputStream fos = getActivity().openFileOutput(ACTIVATED_FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -177,8 +177,12 @@ public class FragmentFrequentTripDetail extends DialogFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             Log.d(TAG, "FT Detail: yes button pressed");
                             boolean result = deleteSavedFrequentTrip(ft);
-                            if (result) { showDeleteComplete(); }
-                            else {showDeleteFail();}
+                            if (result) {
+                                showDeleteComplete();
+                            }
+                            else {
+                                showDeleteFail();
+                            }
                             dismiss();
                         }
 
@@ -207,12 +211,8 @@ public class FragmentFrequentTripDetail extends DialogFragment {
     private boolean deleteSavedFrequentTrip(FrequentTrip item) {
         int itemId = item.getId();
         boolean result = false;
-        ArrayList<FrequentTrip> tripList;
-        try {
-            Log.d(TAG, "FT Detail: deleteFT");
-            FileInputStream fis =mContext.openFileInput(FREQUENT_TRIP_FILENAME);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            tripList = (ArrayList) ois.readObject();
+        ArrayList<FrequentTrip> tripList = LocalDB.getInstance().getFrequentTripsData();
+        try{
             for (FrequentTrip trip : tripList) {
                 if (trip.getId() == itemId) {
                     tripList.remove(trip);
@@ -223,8 +223,7 @@ public class FragmentFrequentTripDetail extends DialogFragment {
                     Log.d(TAG, "FT Detail: deleteFT -> No record found");
                 }
             }
-            ois.close();
-            fis.close();
+
             if (result) {
                 LocalDB.getInstance().setFrequentTripsData(tripList);
                 FileOutputStream fos = mContext.openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
@@ -239,26 +238,28 @@ public class FragmentFrequentTripDetail extends DialogFragment {
         } catch (IOException e) {
             Log.d(TAG, "FT Detail: deleteFT -> IO Exception");
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            Log.d(TAG, "FT Detail: deleteFT -> ClassNotFound Exception");
-            e.printStackTrace();
         }
 
-        // If the deleted trip is also activated, deactivate it
-        try {
-            // Hopefully this will clean the content of the file :)
-            Log.d(TAG, "FT Detail: delete FT -> deactivate trip");
-            FileOutputStream fos = getActivity().openFileOutput(ACTIVATED_FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.close();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "FT Detail: FileNotFound Exception");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.d(TAG, "FT Detail: IO Exception");
-            e.printStackTrace();
+        FrequentTrip activated = LocalDB.getInstance().getActivatedFrequentTrip();
+        if (activated != null && activated.getId() == itemId) {
+            // If the deleted trip is also activated, deactivate it
+            LocalDB.getInstance().setActivatedFrequentTrip(null);
+            try {
+                // Hopefully this will clean the content of the file :)
+                Log.d(TAG, "FT Detail: delete FT -> deactivate trip");
+                FileOutputStream fos = getActivity().openFileOutput(ACTIVATED_FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.close();
+                fos.close();
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "FT Detail: FileNotFound Exception");
+                e.printStackTrace();
+            } catch (IOException e) {
+                Log.d(TAG, "FT Detail: IO Exception");
+                e.printStackTrace();
+            }
         }
+
         return result;
     }
 

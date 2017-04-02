@@ -94,13 +94,12 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             flag = LOAD_OK;
         } catch (ClassNotFoundException e) {
             Log.e(TAG, "doInBackground: class not found");
-            flag = LOAD_FAIL;
+            this.frequentTripsList = null;
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "doInBackground: Bus Stops File not found");
-            flag = LOAD_FAIL;
+            Log.e(TAG, "doInBackground: Frequent trips file not found");
+            this.frequentTripsList = null;
         } catch (IOException e) {
             e.printStackTrace();
-            flag = LOAD_FAIL;
         }
 
         if (flag == LOAD_OK) {

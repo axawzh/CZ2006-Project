@@ -77,6 +77,18 @@
                     android:textColor="@color/cast_libraries_material_featurehighlight_text_header_color"
                     android:textSize="18sp" />
 
+                <TextView
+                    android:id="@+id/txt_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="4dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/cast_libraries_material_featurehighlight_text_header_color"
+                    android:textSize="16sp"
+                    tools:text="Message" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -95,7 +107,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/btn_cancel_the_trip" />
+                    android:fontFamily="sans-serif"
+                    android:text="@string/btn_cancel_the_trip"
+                    android:textColor="@android:color/holo_red_light"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </FrameLayout>

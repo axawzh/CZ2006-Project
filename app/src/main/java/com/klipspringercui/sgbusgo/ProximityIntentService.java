@@ -48,7 +48,7 @@ import static com.klipspringercui.sgbusgo.R.id.alightingBusStop;
  * the transition type and geofence id(s) that triggered the transition. Creates a notification
  * as the output.
  */
-public class ProximityIntentService extends IntentService {
+public class ProximityIntentService extends IntentService implements GetJSONETAData.ETADataAvailableCallable {
 
     private static final String TAG = "ProximityIntentService";
 
@@ -81,18 +81,50 @@ public class ProximityIntentService extends IntentService {
         }
         // Get the transition type.
         String description = null;
+        String busStopCode = null;
+        String busServiceNo = null;
+
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
         // Test that the reported transition was of interest.
         Bundle bundle = intent.getExtras();
         //BusStop alightingBusStop = null;
         if (bundle != null) {
             description = bundle.getString(BaseActivity.ALIGHTING_BUSSTOP);
+            if (description == null)
+                description = bundle.getString(BaseActivity.STARTING_BUSSTOP_DESCRIPTION);
+            busServiceNo = bundle.getString(BaseActivity.FREQUENT_SERVICE_NO);
+            busStopCode = bundle.getString(BaseActivity.STARTING_BUSSTOP_CODE);
         }
         if (description == null) {
             Log.e(TAG, "onHandleIntent: bus stop null");
             return;
         }
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            if (busServiceNo != null && busStopCode != null) {
+                Log.d(TAG, "onHandleIntent: ETA Mode initiated");
+                GetJSONETAData getETA = new GetJSONETAData(this, BaseActivity.ETA_URL);
+                List<ETAItem> etas = getETA.runInSameThread(busStopCode, busServiceNo);
+                if (etas != null && etas.size() > 0) {
+                    ETAItem etaItem = etas.get(0);
+                    Log.d(TAG, "onReceive: building notification");
+                    NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(this);
+                    nBuilder.setSmallIcon(R.drawable.notification_bus_white)
+                            .setDefaults(Notification.DEFAULT_ALL)
+                            .setContentTitle("Estimated Arrival Time of " + busServiceNo + " @" + description)
+                            .setContentText(" Next Bus: " + etaItem.getArrival1() + "  Subsequent Bus: " + etaItem.getArrival2())
+                            .setPriority(Notification.PRIORITY_HIGH);
+                    Intent resultIntent = new Intent(getApplicationContext(), ETAActivity.class);
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+                    stackBuilder.addParentStack(ETAActivity.class);
+                    stackBuilder.addNextIntent(resultIntent);
+                    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
+                    nBuilder.setContentIntent(resultPendingIntent);
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(1, nBuilder.build());
+                }
+                return;
+            }
+
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
 
             Log.d(TAG, "onReceive: building notification");
@@ -121,4 +153,8 @@ public class ProximityIntentService extends IntentService {
         }
     }
 
+    @Override
+    public void onETADataAvailable(List<ETAItem> data, String serviceNo, String busStopCode) {
+
+    }
 }

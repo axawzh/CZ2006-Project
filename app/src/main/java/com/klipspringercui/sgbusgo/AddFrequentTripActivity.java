@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -47,11 +48,6 @@ public class AddFrequentTripActivity extends BaseActivity {
     Button buttonSetTime = null;
     Button buttonSaveFrequentTrip = null;
 
-    TextView textSelectStartingBusStop = null;
-    TextView textSelectAlightingBusStop = null;
-    TextView textSelectBusService = null;
-    TextView textSetTime = null;
-
     private long btnLastClickTime = 0;
 
     private BusStop selectedStartingBusStop = null;
@@ -72,36 +68,41 @@ public class AddFrequentTripActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_frequent_trip);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        activateToolBar(true);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                CurrentTrip current = LocalDB.getInstance().getCurrentTrip();
+                if (current == null) {
+                    Snackbar.make(view, "You haven't start a trip yet.\n Set an alighting alarm or activate a frequent trip to start one!", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    Toast.makeText(AddFrequentTripActivity.this, "Connecting...", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AddFrequentTripActivity.this, CurrentTripActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
         buttonSelectStartingBusStop = (Button) findViewById(R.id.btnFTSelectStartingBusStop);
-        textSelectStartingBusStop = (TextView) findViewById(R.id.txtFTStartingSelectedBusStop);
         buttonSelectStartingBusStop.setOnClickListener(busStopOnClickListener);
 
         buttonSelectAlightingBusStop = (Button) findViewById(R.id.btnFTSelectAlightingBusStop);
-        textSelectAlightingBusStop = (TextView) findViewById(R.id.txtFTAlightingSelectedBusStop);
         buttonSelectAlightingBusStop.setOnClickListener(busStopOnClickListener);
 
         buttonSelectBusService = (Button) findViewById(R.id.btnFTSelectBusService);
-        textSelectBusService = (TextView) findViewById(R.id.txtFTSelectedBusService);
         buttonSelectBusService.setOnClickListener(busServiceOnClickListener);
 
         buttonSetTime = (Button) findViewById(R.id.btnFTSetTime);
-        textSetTime = (TextView) findViewById(R.id.txtFTSetTime);
         buttonSetTime.setOnClickListener(SetTimeOnClickListener);
 
         buttonSaveFrequentTrip = (Button) findViewById(R.id.btnSaveTrip);
         buttonSaveFrequentTrip.setOnClickListener(SaveTripOnClickListener);
+
+        frequentTripArrayList = LocalDB.getInstance().getFrequentTripsData();
     }
 
     Button.OnClickListener busStopOnClickListener = new Button.OnClickListener() {
@@ -118,8 +119,12 @@ public class AddFrequentTripActivity extends BaseActivity {
             bundle.putString(SEARCH_AID, AddFrequentTripActivity.this.selectedBusService);
             intent.putExtras(bundle);
             if (id == R.id.btnFTSelectStartingBusStop) {
+                selectedStartingBusStop = null;
+                buttonSelectStartingBusStop.setText(R.string.select_start_bus_stop);
                 startActivityForResult(intent, REQUEST_BUSSTOP);
             } else {
+                selectedAlightingBusStop = null;
+                buttonSelectAlightingBusStop.setText(R.string.select_alight_bus_stop);
                 startActivityForResult(intent, REQUEST_BUSSTOP_B);
             }
         }
@@ -128,6 +133,8 @@ public class AddFrequentTripActivity extends BaseActivity {
     Button.OnClickListener busServiceOnClickListener = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
+            selectedBusService = null;
+            buttonSelectBusService.setText(R.string.bus_service_no);
             Intent intent = new Intent(AddFrequentTripActivity.this, BusServiceSelectionActivity.class);
             startActivityForResult(intent, REQUEST_BUSSERVICE);
         }
@@ -165,7 +172,7 @@ public class AddFrequentTripActivity extends BaseActivity {
                     pickerMin = selectedMinute;
 
                     // set current time into textview
-                    textSetTime.setText(new StringBuilder().append(pad(pickerHour))
+                    buttonSetTime.setText(new StringBuilder().append(pad(pickerHour))
                             .append(":").append(pad(pickerMin)));
                 }
     };
@@ -190,58 +197,23 @@ public class AddFrequentTripActivity extends BaseActivity {
             }
             FrequentTrip ft = new FrequentTrip(selectedStartingBusStop, selectedAlightingBusStop, selectedBusService, pickerHour, pickerMin,(int) System.currentTimeMillis());
 
-            try {
-                // Save all frequent trips into one ArrayList, and save this ArrayList
-                // into local file
-                Log.d(TAG, "AddFrequentTrip: writing data");
+            frequentTripArrayList.add(ft);
 
-                // Read from file to check if there are existing saved trips
-                // If yes, append the new trip to the arraylist and write back
-                // If no, create a new arraylist and save to file
-                FileInputStream fis = getApplicationContext().openFileInput(FREQUENT_TRIP_FILENAME);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                frequentTripArrayList = (ArrayList) ois.readObject();
-                ois.close();
-                fis.close();
-                frequentTripArrayList.add(ft);
-                LocalDB.getInstance().setFrequentTripsData(frequentTripArrayList);
+            try {
                 FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(frequentTripArrayList);
+                LocalDB.getInstance().setFrequentTripsData(frequentTripArrayList);
                 oos.close();
                 fos.close();
                 setResult(RESULT_OK);
                 finish();
-            } catch (EOFException e){
-                // If no frequent trip record. i.e. no saved file.
-                Log.d(TAG, "AddFrequentTrip: EOF Exception, writing new entry");
-                try {
-                    FileOutputStream fos = getApplicationContext().openFileOutput(FREQUENT_TRIP_FILENAME, Context.MODE_PRIVATE);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    ArrayList<FrequentTrip> temp = new ArrayList<FrequentTrip>();
-                    temp.add(ft);
-                    oos.writeObject(temp);
-                    Log.d(TAG, "AddFrequentTrip: EOF Exception, writing ft: " + ft.getClass());
-                    oos.close();
-                    fos.close();
-                    setResult(RESULT_OK);
-                    Log.d(TAG, "AddFrequentTrip: EOF Exception -> RESULT_OK");
-                    finish();
-                } catch (IOException n) {
-                    Log.d(TAG, "AddFrequentTrip: IO Exception");
-                    n.printStackTrace();
-                    setResult(RESULT_CANCELED);
-                }
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "AddFrequentTrip: FileNotFound Exception");
                 e.printStackTrace();
                 setResult(RESULT_CANCELED);
             } catch (IOException e) {
                 Log.d(TAG, "AddFrequentTrip: IO Exception");
-                e.printStackTrace();
-                setResult(RESULT_CANCELED);
-            } catch (ClassNotFoundException e) {
-                Log.d(TAG, "AddFrequentTrip: ClassNotFoundException");
                 e.printStackTrace();
                 setResult(RESULT_CANCELED);
             }
@@ -257,17 +229,19 @@ public class AddFrequentTripActivity extends BaseActivity {
                 switch(requestCode) {
                     case REQUEST_BUSSTOP:
                         selectedStartingBusStop = (BusStop) bundle.getSerializable(FT_SELECTED_BUSSTOP);
-                        textSelectStartingBusStop.setText(selectedStartingBusStop.getDescription());
+                        buttonSelectStartingBusStop.setText(selectedStartingBusStop.getDescription());
                         break;
                     case REQUEST_BUSSTOP_B:
                         selectedAlightingBusStop = (BusStop) bundle.getSerializable(FT_SELECTED_BUSSTOP);
-                        textSelectAlightingBusStop.setText(selectedAlightingBusStop.getDescription());
+                        buttonSelectAlightingBusStop.setText(selectedAlightingBusStop.getDescription());
                         break;
                     case REQUEST_BUSSERVICE:
                         selectedBusService = bundle.getString(FT_SELECTED_BUSSERVICENO);
-                        textSelectBusService.setText(selectedBusService);
+                        buttonSelectBusService.setText(selectedBusService);
                         selectedStartingBusStop = null;
+                        buttonSelectStartingBusStop.setText(R.string.select_start_bus_stop);
                         selectedAlightingBusStop = null;
+                        buttonSelectAlightingBusStop.setText(R.string.select_alight_bus_stop);
                         btnBusStopEnabled = true;
                         break;
                     default:
@@ -277,6 +251,17 @@ public class AddFrequentTripActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
 

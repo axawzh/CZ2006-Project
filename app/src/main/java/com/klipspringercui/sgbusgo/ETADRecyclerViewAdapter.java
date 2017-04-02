@@ -74,9 +74,9 @@ class ETADRecyclerViewAdapter extends RecyclerView.Adapter<ETADRecyclerViewAdapt
                 }
             }
             if (item.getArrival1() == null || item.getArrival1().length() == 0 || item.getArrival1().equals("0")) {
-                holder.txtNextETA.setText("No operating buses");
-                holder.txtSubETA.setText("");
-                holder.txtSub3ETA.setText("");
+                holder.txtNextETA.setText("--");
+                holder.txtSubETA.setText("--");
+                holder.txtSub3ETA.setText("--");
                 return;
             }
             holder.txtNextETA.setText(item.getArrival1());

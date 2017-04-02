@@ -26,13 +26,21 @@ public class BaseActivity extends AppCompatActivity {
     static final String SEARCH_MODE = "BUS_STOP_SEARCH_MODE";
     static final String SEARCH_AID = "BUS_STOP_SEARCH_AID";
 
-    // For alighting alarm
     static final String SHARED_PREFERENCE_NAME = "SHARED_PREFERENCE";
+
+    // For alighting alarm
     static final String ALIGHTING_ALARM_ADDED = "ALIGHTING ALARM ADDED";
     static final String ALIGHTING_BUSSTOP = "ARRIVAL_BUSSTOP_DESCRIPTION";
     static final String AA_DESTINATION_LATITUDE = "DESTINATION_LATITUDE";
     static final String AA_DESTINATION_LONGITUDE = "DESTINATION_LONGITUDE";
     static final String AA_FROM_NOTIFICATION = "FROM_NOTIFICATION";
+
+    // For activated frequent trip
+    static final String ACTIVATED_TRIP_ADDED = "ACTIVATED TRIP ADDED";
+    static final String STARTING_BUSSTOP_DESCRIPTION = "STARTING_BUS_STOP_DESCEIPTION";
+    static final String STARTING_BUSSTOP_CODE = "STARTING_BUS_STOP_CODE";
+    static final String FREQUENT_SERVICE_NO = "FREQUENT_SERVICE_NO";
+
 
     // For startActivityForResult
     static final int REQUEST_BUSSTOP = 1;
@@ -45,6 +53,7 @@ public class BaseActivity extends AppCompatActivity {
     static final int SEARCHMODE_WITHOUTSN = 2;
     // For pending intent
     static final int REQUEST_ALIGHTING_ALARM = 1;
+    static final int REQUEST_ACTIVATED_ALARM = 2;
 
     AlertDialog connectionDialog = null;
 

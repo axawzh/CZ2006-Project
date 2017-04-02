@@ -11,17 +11,10 @@ import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.klipspringercui.sgbusgo.R.id.txtFCSelectedAlightingBusStop;
-import static com.klipspringercui.sgbusgo.R.id.txtFCSelectedBusService;
-import static com.klipspringercui.sgbusgo.R.id.txtFCSelectedStartingBusStop;
-import static com.klipspringercui.sgbusgo.R.id.txtFareResult;
 
 
 public class FareCalculatorActivity extends BaseActivity implements GetJSONFareRateData.FareRateDataAvailableCallable {
@@ -75,7 +68,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
         //this.txtFCSelectedBusService = (TextView) findViewById(R.id.txtFCSelectedBusService);
         //this.txtFareResult = (TextView) findViewById(R.id.txtFareResult);
 
-        this.btnFCSelectStartingBusStop = (Button) findViewById(R.id.btnFCSelectStartingBusStop);
+        this.btnFCSelectStartingBusStop = (Button) findViewById(R.id.btnFTSelectStartingBusStop);
         this.btnFCSelectAlightingBusStop = (Button) findViewById(R.id.btnFCSelectAlightingBusStop);
         this.btnFCSelectBusService = (Button) findViewById(R.id.btnFCSelectBusService);
         this.btnCalculate = (Button) findViewById(R.id.btnCalculate);
@@ -103,7 +96,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
             bundle.putInt(SEARCH_MODE, SEARCHMODE_WITHSN);
             bundle.putString(SEARCH_AID, FareCalculatorActivity.this.selectedBusService);
             intent.putExtras(bundle);
-            if (id == R.id.btnFCSelectStartingBusStop) {
+            if (id == R.id.btnFTSelectStartingBusStop) {
                 startActivityForResult(intent, REQUEST_BUSSTOP);
             } else {
                 startActivityForResult(intent, REQUEST_BUSSTOP_B);

@@ -32,4 +32,10 @@
     <string name="alight_bus_stop_txt">End</string>
     <string name="bus_service_no">Bus Service No</string>
     <string name="empty_eta_list_message">The estimated arrival time of your frequent trips would appear here</string>
+    <string name="select_bus_stop_btntxt">Select Bus Stop</string>
+    <string name="alighting_alarm_failure">Connection Failure. Please check that your device is connected to internet and the location is enabled</string>
+    <string name="alighting_alarm_success">Adding the Alighting Alarm\n You can check your current trip by the floating button on the bottom right</string>
+    <string name="alight_message">Prepare to alight</string>
+    <string name="select_start_bus_stop">Select Starting Bus Stop</string>
+    <string name="select_alight_bus_stop">Select Alighting Bus Stop</string>
 </resources>

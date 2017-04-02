@@ -113,6 +113,15 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
 
     }
 
+    public List<ETAItem> runInSameThread(String... params) {
+        Log.d(TAG, "runInSameThread: ");
+        if (mCallable != null) {
+            doInBackground(params);
+            return this.etas;
+        } else
+            return null;
+    }
+
     private String processTimeData(String arrival) {
         int indexL = arrival.indexOf("T");
         int indexU = arrival.indexOf("+");

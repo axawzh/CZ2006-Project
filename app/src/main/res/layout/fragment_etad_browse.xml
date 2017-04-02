@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/colorBackGround"
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:background="@color/itemBackGround"
         android:padding="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/itemBackGround"
             android:orientation="vertical">
 
             <TextView
@@ -23,12 +27,14 @@
                 android:layout_marginLeft="4dp"
                 android:padding="4dp"
                 android:textSize="14sp"
+                android:textColor="@color/greyText"
                 tools:text="BusStop" />
 
             <TextView
                 android:id="@+id/txtETADServiceNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/greyText"
                 android:padding="8dp"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -38,38 +44,70 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingBottom="4dp">
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="0"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/clock_small" />
 
                 <TextView
                     android:id="@+id/txtETADNext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:textAlignment="textStart"
+                    android:textColor="@color/greyText"
                     android:textSize="18sp"
                     tools:text="ETA1" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="0"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/clock_small" />
 
                 <TextView
                     android:id="@+id/txtETADSub"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:textAlignment="textStart"
+                    android:textColor="@color/greyText"
                     android:textSize="18sp"
                     tools:text="ETA2" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="0"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/clock_small" />
 
                 <TextView
                     android:id="@+id/txtETADSub3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:textAlignment="textStart"
+                    android:textColor="@color/greyText"
                     android:textSize="18sp"
                     tools:text="ETA3" />
 
