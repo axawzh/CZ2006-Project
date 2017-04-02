@@ -9,7 +9,8 @@
     <!-- TODO: Update blank fragment layout -->
 <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorBackGround">
     <Button
         android:id="@+id/btnFTDetailActivate"
         android:layout_width="wrap_content"
@@ -17,7 +18,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="31dp"
-        android:background="#33e550"
+        android:background="@drawable/button_green"
         android:text="ACTIVATE"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -32,7 +33,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="27dp"
-        android:background="#e53333"
+        android:background="@drawable/button_red"
         android:text="DELETE"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -48,6 +49,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:text="Alighting Bus Stop: "
+        android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -64,6 +66,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:text="Starting Bus Stop: "
+        android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -79,6 +82,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:text="Bus Service: "
+        android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -96,6 +100,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:text="Planned trip starting time: "
+        android:textColor="@color/white"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -113,6 +118,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="00:00"
+        android:textColor="@color/white"
         android:textSize="30sp"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintLeft_toLeftOf="parent"
