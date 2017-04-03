@@ -50,7 +50,7 @@
 
                 <ImageView
                     android:id="@+id/imageView1"
-                    android:layout_width="22dp"
+                    android:layout_width="20dp"
                     android:layout_height="22dp"
                     android:layout_marginTop="4dp"
                     android:layout_weight="0"
@@ -61,17 +61,17 @@
                     android:id="@+id/txtETADNext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="1dp"
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:textAlignment="textStart"
                     android:textColor="@color/greyText"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     tools:text="ETA1" />
 
                 <ImageView
                     android:id="@+id/imageView2"
-                    android:layout_width="22dp"
+                    android:layout_width="20dp"
                     android:layout_height="22dp"
                     android:layout_marginTop="4dp"
                     android:layout_weight="0"
@@ -82,17 +82,17 @@
                     android:id="@+id/txtETADSub"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="1dp"
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:textAlignment="textStart"
                     android:textColor="@color/greyText"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     tools:text="ETA2" />
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="22dp"
+                    android:layout_width="20dp"
                     android:layout_height="22dp"
                     android:layout_marginTop="4dp"
                     android:layout_weight="0"
@@ -103,12 +103,12 @@
                     android:id="@+id/txtETADSub3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="1dp"
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:textAlignment="textStart"
                     android:textColor="@color/greyText"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     tools:text="ETA3" />
 
             </LinearLayout>

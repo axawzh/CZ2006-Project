@@ -25,6 +25,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -107,6 +108,10 @@ public class ProximityIntentService extends IntentService implements GetJSONETAD
                 if (etas != null && etas.size() > 0) {
                     ETAItem etaItem = etas.get(0);
                     Log.d(TAG, "onReceive: building notification");
+                    SharedPreferences mSharedPreference = getSharedPreferences(BaseActivity.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mSharedPreference.edit();
+                    editor.putBoolean(BaseActivity.ACTIVATED_ALARM_ADDED, false);
+                    editor.apply();
                     NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(this);
                     nBuilder.setSmallIcon(R.drawable.notification_bus_white)
                             .setDefaults(Notification.DEFAULT_ALL)

@@ -36,7 +36,7 @@ public class BaseActivity extends AppCompatActivity {
     static final String AA_FROM_NOTIFICATION = "FROM_NOTIFICATION";
 
     // For activated frequent trip
-    static final String ACTIVATED_TRIP_ADDED = "ACTIVATED TRIP ADDED";
+    static final String ACTIVATED_ALARM_ADDED = "ACTIVATED_ALARM_ADDED";
     static final String STARTING_BUSSTOP_DESCRIPTION = "STARTING_BUS_STOP_DESCEIPTION";
     static final String STARTING_BUSSTOP_CODE = "STARTING_BUS_STOP_CODE";
     static final String FREQUENT_SERVICE_NO = "FREQUENT_SERVICE_NO";

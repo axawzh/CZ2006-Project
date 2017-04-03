@@ -54,7 +54,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
     static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
     static final String ACTION_PROXIMITY_ALERT = "com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT";
 
-    private static final float RADIUS = 550.0f;
+    private static final float RADIUS = 150.0f;
     private static final long EXPIRATION = 3600000;
 
 

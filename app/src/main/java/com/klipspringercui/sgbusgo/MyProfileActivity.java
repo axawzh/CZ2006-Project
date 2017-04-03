@@ -57,7 +57,7 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     static final int LOAD_FAIL = 1;
     private int loadFlag = LOAD_FAIL;
 
-    private static final float RADIUS = 550.0f;
+    private static final float RADIUS = 40.0f;
     private static final long EXPIRATION = 86400000;
 
     Button buttonAddFrequentTrip = null;
@@ -66,6 +66,8 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
 
     FrequentTripListAdapter listViewAdapter;
     private FrequentTrip activatedFrequentTrip;
+
+    SharedPreferences mSharedPreferences;
 
     protected GoogleApiClient mGoogleApiClient;
     boolean activated = false;
@@ -114,6 +116,9 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
 //            Log.d(TAG, "Test: IO Exception");
 //            e.printStackTrace();
 //        }
+
+        mSharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+        activated = mSharedPreferences.getBoolean(ACTIVATED_ALARM_ADDED, false);
 
         ArrayList<FrequentTrip> frequentTripArrayList = LocalDB.getInstance().getFrequentTripsData();
         if (frequentTripArrayList == null || frequentTripArrayList.size() == 0) {
@@ -229,11 +234,7 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
         Log.d(TAG, "onResume: starts");
         getSupportActionBar().setTitle(TITLE);
         listViewAdapter.loadNewData(LocalDB.getInstance().getFrequentTripsData());
-        activatedFrequentTrip = getActivatedFrequentTrip();
-        if (activatedFrequentTrip != null) {
-            setETAAlarm(activatedFrequentTrip);
-            activated = true;
-        }
+
     }
 
     public void setActionBarTitle(String title) {
@@ -341,7 +342,12 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected: ");
-
+        if (activated == false) {
+            activatedFrequentTrip = getActivatedFrequentTrip();
+            if (activatedFrequentTrip != null) {
+                setETAAlarm(activatedFrequentTrip);
+            }
+        }
     }
 
     @Override
@@ -358,12 +364,12 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     public void onResult(@NonNull Status status) {
         if (status.isSuccess()) {
             Toast.makeText(this, "Successfully Activated", Toast.LENGTH_SHORT).show();
-//            SharedPreferences.Editor editor = mSharedPreferences.edit();
-//            editor.putBoolean(ALIGHTING_ALARM_ADDED, alightingAlertAdded);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(ALIGHTING_ALARM_ADDED, true);
 //            editor.putString(ALIGHTING_BUSSTOP, selectedBusStop.getDescription());
 //            editor.putFloat(AA_DESTINATION_LATITUDE, (float) selectedBusStop.getLatitude());
 //            editor.putFloat(AA_DESTINATION_LONGITUDE, (float) selectedBusStop.getLongitude());
-//            editor.apply();
+            editor.apply();
             LocalDB.getInstance().setActivatedFrequentTrip(activatedFrequentTrip);
         } else {
             Toast.makeText(this, R.string.alighting_alarm_failure, Toast.LENGTH_SHORT).show();

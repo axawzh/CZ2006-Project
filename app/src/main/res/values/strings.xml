@@ -38,4 +38,5 @@
     <string name="alight_message">Prepare to alight</string>
     <string name="select_start_bus_stop">Select Starting Bus Stop</string>
     <string name="select_alight_bus_stop">Select Alighting Bus Stop</string>
+    <string name="deactivate_txt">DEACTIVATE</string>
 </resources>

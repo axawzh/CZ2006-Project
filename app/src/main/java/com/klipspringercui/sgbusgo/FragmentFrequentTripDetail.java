@@ -105,7 +105,7 @@ public class FragmentFrequentTripDetail extends DialogFragment {
 
         activated_ft = LocalDB.getInstance().getActivatedFrequentTrip();
         if (activated_ft != null && activated_ft.getId() == ft.getId()) {
-            btnActivate.setText("Deactivate");
+            btnActivate.setText(R.string.deactivate_txt);
             btnActivate.setOnClickListener(deactivateOnClickListener);
         } else {
             btnActivate.setOnClickListener(activateOnClickListener);
