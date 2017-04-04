@@ -37,17 +37,17 @@ class AdultFareCalculator extends FareCalculator{
         super();
     }
     double calculate(double start, double end) {
-        if (start == end)
-            return 0.0;
         if (start < 0 || end < 0)
             return -1;
+        if (start == end)
+            return 0.0;
         double distance = Math.abs(start - end);
         double result = -1;
         for (int i = 0; i < fareRates.size(); i++) {
             if (fareRates.get(i).getDistanceUp() > distance) {
                 result = fareRates.get(i).getRateAdult();
+                return (double) Math.round(result) / 100;
             }
-            return (double) Math.round(result) / 100;
         }
         return -1;
     }
@@ -67,8 +67,8 @@ class SeniorFareCalculator extends FareCalculator{
         for (int i = 0; i < fareRates.size(); i++) {
             if (fareRates.get(i).getDistanceUp() > distance) {
                 result = fareRates.get(i).getRateSenior();
+                return (double) Math.round(result) / 100;
             }
-            return (double) Math.round(result) / 100;
         }
         return -1;
     }
@@ -88,8 +88,8 @@ class StudentFareCalculator extends FareCalculator{
         for (int i = 0; i < fareRates.size(); i++) {
             if (fareRates.get(i).getDistanceUp() > distance) {
                 result = fareRates.get(i).getRateStudent();
+                return (double) Math.round(result) / 100;
             }
-            return (double) Math.round(result) / 100;
         }
         return -1;
     }
@@ -109,8 +109,8 @@ class CashFareCalculator extends FareCalculator{
         for (int i = 0; i < fareRates.size(); i++) {
             if (fareRates.get(i).getDistanceUp() > distance) {
                 result = fareRates.get(i).getRateCash();
+                return (double) Math.round(result) / 100;
             }
-            return (double) Math.round(result) / 100;
         }
         return -1;
     }
@@ -130,8 +130,8 @@ class WorkfareFareCalculator extends FareCalculator{
         for (int i = 0; i < fareRates.size(); i++) {
             if (fareRates.get(i).getDistanceUp() > distance) {
                 result = fareRates.get(i).getRateWorkfare();
+                return (double) Math.round(result) / 100;
             }
-            return (double) Math.round(result) / 100;
         }
         return -1;
     }
@@ -151,8 +151,8 @@ class DisabilitiesFareCalculator extends FareCalculator{
         for (int i = 0; i < fareRates.size(); i++) {
             if (fareRates.get(i).getDistanceUp() > distance) {
                 result = fareRates.get(i).getRateDisabilities();
+                return (double) Math.round(result) / 100;
             }
-            return (double) Math.round(result) / 100;
         }
         return -1;
     }

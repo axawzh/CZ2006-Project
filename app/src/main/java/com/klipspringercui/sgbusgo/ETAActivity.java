@@ -157,6 +157,7 @@ public class ETAActivity extends BaseActivity implements DataLoaderFactory.ETADa
             for (FrequentTrip trip : frequentTrips) {
                 String busStopCode = trip.getStartingBusStop().getBusStopCode();
                 String busServiceNo = trip.getServiceNo();
+
                 DataLoaderFactory.ETADataLoader etaLoader = DataLoaderFactory.getETADataLoader(this);
                 etaLoader.run(busStopCode,busServiceNo);
 
