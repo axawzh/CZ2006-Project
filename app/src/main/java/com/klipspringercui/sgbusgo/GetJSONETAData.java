@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Kevin on 12/3/17.
  */
 
-class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData.DataDownloadCallable {
+class GetJSONETAData extends AsyncTask<String, Void, Void> implements DataLoaderFactory.ETADataLoader, GetRawData.DataDownloadCallable {
 
     private static final String TAG = "GetJSONETAData";
     private String busStopCode;
@@ -25,16 +25,23 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
     private List<ETAItem> etas;
 
     private String baseURL;
-    private final ETADataAvailableCallable mCallable;
 
-    interface ETADataAvailableCallable {
-        void onETADataAvailable(List<ETAItem> data, String serviceNo, String busStopCode);
-    }
+    private final DataLoaderFactory.ETADataAvailableCallable mCallable;
 
-    public GetJSONETAData(ETADataAvailableCallable callable, String baseURL) {
+    GetJSONETAData(DataLoaderFactory.ETADataAvailableCallable callable, String baseURL) {
         this.baseURL = baseURL;
         this.mCallable = callable;
     }
+
+    //Change here
+//    private final ETADataAvailableCallable mCallable;
+//    public GetJSONETAData(ETADataAvailableCallable callable, String baseURL) {
+//        this.baseURL = baseURL;
+//        this.mCallable = callable;
+//    }
+//    interface ETADataAvailableCallable {
+//        void onETADataAvailable(List<ETAItem> data, String serviceNo, String busStopCode);
+//    }
 
     /**
      *
@@ -130,4 +137,10 @@ class GetJSONETAData extends AsyncTask<String, Void, Void> implements GetRawData
         String arrvalMin = arrivalTime.substring(3);
         return arrivalTime;
     }
+
+    @Override
+    public void run(String... params) {
+        this.execute(params);
+    }
+
 }

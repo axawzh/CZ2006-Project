@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataAvailableCallable,
+public class ETAActivity extends BaseActivity implements DataLoaderFactory.ETADataAvailableCallable,
                                                                 DialogDisplayETA.OnFragmentInteractionListener {
 
     private static final String TAG = "ETAActivity";
@@ -149,20 +149,27 @@ public class ETAActivity extends BaseActivity implements GetJSONETAData.ETADataA
     @Override
     protected void onResume() {
         super.onResume();
+
         ArrayList<FrequentTrip> frequentTrips = LocalDB.getInstance().getFrequentTripsData();
-        etaObtained = frequentTrips.size();
-        frequentTripETAs.clear();
+        if (frequentTrips != null) {
+            etaObtained = frequentTrips.size();
+            frequentTripETAs.clear();
+            for (FrequentTrip trip : frequentTrips) {
+                String busStopCode = trip.getStartingBusStop().getBusStopCode();
+                String busServiceNo = trip.getServiceNo();
+                DataLoaderFactory.ETADataLoader etaLoader = DataLoaderFactory.getETADataLoader(this);
+                etaLoader.run(busStopCode,busServiceNo);
+
+//                GetJSONETAData getJSONETAData = new GetJSONETAData(this, ETA_URL);
+//                getJSONETAData.execute(busStopCode, busServiceNo);
+            }
+        }
 //        if (frequentTrips.size() <= 1) {
 //            mConstraintSet.setGuidelineBegin(R.id.guidelineETA,160);
 //        } else {
 //            mConstraintSet.setGuidelineBegin(R.id.guidelineETA,240);
 //        }
-        for (FrequentTrip trip : frequentTrips) {
-            String busStopCode = trip.getStartingBusStop().getBusStopCode();
-            String busServiceNo = trip.getServiceNo();
-            GetJSONETAData getJSONETAData = new GetJSONETAData(this, ETA_URL);
-            getJSONETAData.execute(busStopCode, busServiceNo);
-        }
+
 
     }
 

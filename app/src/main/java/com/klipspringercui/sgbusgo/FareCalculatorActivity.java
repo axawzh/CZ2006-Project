@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FareCalculatorActivity extends BaseActivity implements GetJSONFareRateData.FareRateDataAvailableCallable {
+public class FareCalculatorActivity extends BaseActivity implements DataLoaderFactory.FareRateDataAvailableCallable {
 
     private static final String TAG = "FareCalculatorActivity";
     static final String FC_SELECTED_BUSSTOP = "CALCULATOR SELECTED BUS STOP";
@@ -39,6 +39,7 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
     boolean btnCalculateEnabled = false;
 
     ProgressDialog loadingDialog;
+    private PaymentMethod paymentMethod = PaymentMethod.ADULT;
 
 
     @Override
@@ -118,22 +119,23 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
         public void onClick(View v) {
             if (!btnCalculateEnabled || selectedBusService == null || selectedStartingBusStop == null || selectedAlightingBusStop == null)
                 return;
-            double distance = selectedStartingBusStop.getDistance() - selectedAlightingBusStop.getDistance();
-            if (distance < 0)
-                distance = 0 - distance;
-            Log.d(TAG, "onClick: distance = " + distance);
-            for (int i = 0; i < rates.size(); i++) {
-                if (rates.get(i).getDistanceUp() > distance) {
-                    Log.d(TAG, "onClick: fare " + rates.get(i).getRateAdult());
-                    String result;
-                    if (distance == 0)
-                        result = "Total Fare: $0.00";
-                    else
-                        result = "Total Fare: $" + (double) Math.round(rates.get(i).getRateAdult()) / 100;
-                    btnCalculate.setText(result);
-                    break;
-                }
+            FareCalculator calculator = FareCalculatorFactory.getFareCalculator(paymentMethod);
+            double totalFare = -1;
+            if (calculator != null && calculator.dataAvailable()) {
+                totalFare = calculator.calculate(
+                        selectedStartingBusStop.getDistance(), selectedAlightingBusStop.getDistance());
+            } else {
+                Toast.makeText(FareCalculatorActivity.this, "Fare rates not available yet", Toast.LENGTH_SHORT).show();
             }
+            if (totalFare == -1) {
+                Toast.makeText(FareCalculatorActivity.this, "Error: data damaged", Toast.LENGTH_SHORT).show();
+            }
+            String result;
+            if (totalFare == 0)
+                result = "Total Fare: $0.00";
+            else
+                result = "Total Fare: $" + totalFare;
+            btnCalculate.setText(result);
         }
     };
 
@@ -150,8 +152,11 @@ public class FareCalculatorActivity extends BaseActivity implements GetJSONFareR
                 return;
             }
             showFareRateLoadingDialog();
-            GetJSONFareRateData getJSONFareRateData = new GetJSONFareRateData(this, FARE_URL);
-            getJSONFareRateData.execute();
+
+            DataLoaderFactory.DataLoader fareDataLoader = DataLoaderFactory.getFareRateDataLoader(this);
+            fareDataLoader.run();
+//            GetJSONFareRateData getJSONFareRateData = new GetJSONFareRateData(this, FARE_URL);
+//            getJSONFareRateData.execute();
         } else {
             Log.d(TAG, "onResume: successfully recovered fare rate data");
             this.btnCalculateEnabled = true;

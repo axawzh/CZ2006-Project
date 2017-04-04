@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
+import static com.klipspringercui.sgbusgo.BaseActivity.ACTIVATED_FREQUENT_TRIP_FILENAME;
 import static com.klipspringercui.sgbusgo.BaseActivity.BUS_SERVICES_FILENAME;
 import static com.klipspringercui.sgbusgo.BaseActivity.BUS_STOPS_FILENAME;
 import static com.klipspringercui.sgbusgo.BaseActivity.FREQUENT_TRIP_FILENAME;
@@ -102,10 +103,26 @@ class LoadLocalData extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
         }
 
+        FrequentTrip activatedTrip = null;
+        try {
+            FileInputStream fis = mContext.openFileInput(ACTIVATED_FREQUENT_TRIP_FILENAME);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            activatedTrip = (FrequentTrip) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (IOException e) {
+            Log.d(TAG, "getActivatedFT: IO Exception");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            Log.d(TAG, "getActivatedFT: ClassNotFound Exception");
+            e.printStackTrace();
+        }
+
         if (flag == LOAD_OK) {
             LocalDB.getInstance().setBusServicesData(busServicesList);
             LocalDB.getInstance().setBusStopsData(busStopsList);
             LocalDB.getInstance().setFrequentTripsData(frequentTripsList);
+            LocalDB.getInstance().setActivatedFrequentTrip(activatedTrip);
         }
         return null;
     }

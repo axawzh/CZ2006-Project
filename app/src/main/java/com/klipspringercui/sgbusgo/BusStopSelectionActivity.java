@@ -98,6 +98,9 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
     Button.OnClickListener FilterListener = new Button.OnClickListener(){
         @Override
         public void onClick(View v) {
+            // does not enable user to choose a bus stop of another bus service when the choices are restricted to a certain bus service.
+            if (searchMode == SEARCHMODE_WITHSN)
+                return;
             filterServiceNo = null;
             Intent intent = new Intent(BusStopSelectionActivity.this, BusServiceSelectionActivity.class);
             startActivityForResult(intent, REQUEST_FILTER);
@@ -212,6 +215,12 @@ public class BusStopSelectionActivity extends BaseActivity implements GetJSONBus
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Receive the selected bus service no. to refine bus stops displayed
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

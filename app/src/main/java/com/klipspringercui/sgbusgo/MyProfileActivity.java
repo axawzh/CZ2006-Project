@@ -57,7 +57,7 @@ public class MyProfileActivity extends BaseActivity implements FragmentFrequentT
     static final int LOAD_FAIL = 1;
     private int loadFlag = LOAD_FAIL;
 
-    private static final float RADIUS = 40.0f;
+    private static final float RADIUS = 100.0f;
     private static final long EXPIRATION = 86400000;
 
     Button buttonAddFrequentTrip = null;

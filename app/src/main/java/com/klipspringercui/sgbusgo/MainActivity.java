@@ -352,10 +352,8 @@ public class MainActivity extends BaseActivity implements GetJSONBusRouteData.Bu
 
     @Override
     public void onBusRouteDataAvailable(List<BusRoute> data, DownloadStatus status) {
-
         BusRoutesDataHandler handler = new BusRoutesDataHandler(getApplicationContext());
         handler.execute(data);
-
     }
 
     private void reloadLocalData(int flagNo) {

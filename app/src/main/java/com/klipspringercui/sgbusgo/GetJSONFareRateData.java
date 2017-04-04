@@ -22,23 +22,30 @@ import java.util.List;
  * Created by Kevin on 14/3/17.
  */
 
-class GetJSONFareRateData extends AsyncTask<String, Void, Void> {
+class GetJSONFareRateData extends AsyncTask<String, Void, Void> implements DataLoaderFactory.DataLoader {
 
     private static final String TAG = "GetJSONFareRateData";
 
     private String url;
-    private FareRateDataAvailableCallable mCallable;
 
     private ArrayList<FareRate> rates;
 
-    interface FareRateDataAvailableCallable {
-        void onFareRateDataAvailable(List<FareRate> data);
-    }
+    private final DataLoaderFactory.FareRateDataAvailableCallable mCallable;
 
-    public GetJSONFareRateData(FareRateDataAvailableCallable mCallable, String url) {
+    GetJSONFareRateData(DataLoaderFactory.FareRateDataAvailableCallable mCallable, String url) {
         this.url = url;
         this.mCallable = mCallable;
     }
+
+    // Change here
+//    private FareRateDataAvailableCallable mCallable;
+//    interface FareRateDataAvailableCallable {
+//        void onFareRateDataAvailable(List<FareRate> data);
+//    }
+//    public GetJSONFareRateData(FareRateDataAvailableCallable mCallable, String url) {
+//        this.url = url;
+//        this.mCallable = mCallable;
+//    }
 
     @Override
     protected Void doInBackground(String... params) {
@@ -134,6 +141,8 @@ class GetJSONFareRateData extends AsyncTask<String, Void, Void> {
                     reader.close();
                 } catch (IOException e) {
                     Log.e(TAG, "doInBackground: Error closing the stream" + e.getMessage());
+                } catch (NullPointerException e) {
+//                    Log.e(TAG, "getFareRawData: null ptr");
                 }
             }
         }
@@ -147,7 +156,18 @@ class GetJSONFareRateData extends AsyncTask<String, Void, Void> {
         if (this.rates != null) {
             mCallable.onFareRateDataAvailable(this.rates);
         } else {
-            Log.e(TAG, "onPostExecute: data error");
+//            Log.e(TAG, "onPostExecute: data error");
         }
     }
+
+    @Override
+    public void run(String... params) {
+        this.execute(params);
+    }
+
+    public ArrayList<FareRate> runInSameThread(String... params) {
+        doInBackground(params);
+        return this.rates;
+    }
+
 }

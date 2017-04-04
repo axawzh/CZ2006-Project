@@ -49,7 +49,7 @@ import static com.klipspringercui.sgbusgo.R.id.alightingBusStop;
  * the transition type and geofence id(s) that triggered the transition. Creates a notification
  * as the output.
  */
-public class ProximityIntentService extends IntentService implements GetJSONETAData.ETADataAvailableCallable {
+public class ProximityIntentService extends IntentService implements DataLoaderFactory.ETADataAvailableCallable {
 
     private static final String TAG = "ProximityIntentService";
 
@@ -103,7 +103,8 @@ public class ProximityIntentService extends IntentService implements GetJSONETAD
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             if (busServiceNo != null && busStopCode != null) {
                 Log.d(TAG, "onHandleIntent: ETA Mode initiated");
-                GetJSONETAData getETA = new GetJSONETAData(this, BaseActivity.ETA_URL);
+                DataLoaderFactory.ETADataLoader getETA = DataLoaderFactory.getETADataLoader(this);
+//                GetJSONETAData getETA = new GetJSONETAData(this, BaseActivity.ETA_URL);
                 List<ETAItem> etas = getETA.runInSameThread(busStopCode, busServiceNo);
                 if (etas != null && etas.size() > 0) {
                     ETAItem etaItem = etas.get(0);

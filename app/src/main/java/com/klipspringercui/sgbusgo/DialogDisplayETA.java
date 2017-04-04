@@ -37,7 +37,7 @@ import static com.klipspringercui.sgbusgo.R.id.busService;
  * Use the {@link DialogDisplayETA#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DialogDisplayETA extends DialogFragment implements GetJSONETAData.ETADataAvailableCallable {
+public class DialogDisplayETA extends DialogFragment implements DataLoaderFactory.ETADataAvailableCallable {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TAG = "DialogDisplayETA";
@@ -121,12 +121,12 @@ public class DialogDisplayETA extends DialogFragment implements GetJSONETAData.E
     ImageButton.OnClickListener RefreshListener = new ImageButton.OnClickListener(){
         @Override
         public void onClick(View v) {
-            GetJSONETAData getJSONETAData = new GetJSONETAData(DialogDisplayETA.this, BaseActivity.ETA_URL);
+            DataLoaderFactory.ETADataLoader getJSONETAData = DataLoaderFactory.getETADataLoader(DialogDisplayETA.this);
             //imgRefresh.setAnimation(animation);
             if (busServiceNo == null)
-                getJSONETAData.execute(busStop.getBusStopCode());
+                getJSONETAData.run(busStop.getBusStopCode());
             else
-                getJSONETAData.execute(busStop.getBusStopCode(), busServiceNo);
+                getJSONETAData.run(busStop.getBusStopCode(), busServiceNo);
         }
     };
 
@@ -149,11 +149,12 @@ public class DialogDisplayETA extends DialogFragment implements GetJSONETAData.E
         // Call super onResume after sizing
         super.onResume();
         //This part is added
-        GetJSONETAData getJSONETAData = new GetJSONETAData(this, BaseActivity.ETA_URL);
+        DataLoaderFactory.ETADataLoader getJSONETAData = DataLoaderFactory.getETADataLoader(DialogDisplayETA.this);
+//        GetJSONETAData getJSONETAData = new GetJSONETAData(this, BaseActivity.ETA_URL);
         if (this.busServiceNo == null)
-            getJSONETAData.execute(busStop.getBusStopCode());
+            getJSONETAData.run(busStop.getBusStopCode());
         else
-            getJSONETAData.execute(busStop.getBusStopCode(), busServiceNo);
+            getJSONETAData.run(busStop.getBusStopCode(), busServiceNo);
     }
 
     @Override

@@ -188,7 +188,7 @@ public class AddFrequentTripActivity extends BaseActivity {
         @Override
         public void onClick(View v) {
             if (selectedBusService == null || !btnSaveTripEnabled ) {
-                Toast.makeText(AddFrequentTripActivity.this, "Please Set Time", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddFrequentTripActivity.this, "Please Fill in All Fields", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (selectedStartingBusStop == null || selectedAlightingBusStop == null) {

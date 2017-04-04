@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import static com.klipspringercui.sgbusgo.FareCalculatorActivity.FC_SELECTED_BUSSTOP;
 
 public class AlightingAlarmActivity extends BaseActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status>{
+        ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status> {
 
     private static final String TAG = "AlightingAlarmActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -54,7 +54,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
     static final String AA_SELECTED_BUSSERVICENO = "ALARM SELECTED BUS SERVICE NO";
     static final String ACTION_PROXIMITY_ALERT = "com.klipspringercui.sgbusgo.ACTION_PROXIMITY_ALERT";
 
-    private static final float RADIUS = 150.0f;
+    private static final float RADIUS = 200.0f;
     private static final long EXPIRATION = 3600000;
 
 
@@ -206,6 +206,7 @@ public class AlightingAlarmActivity extends BaseActivity implements
         //getApplicationContext().sendBroadcast(intent);
         LocationHandler.getInstance().setAlightingAlarm(getApplicationContext(), latitude, longitude, pendingIntent);
         LocalDB.getInstance().setCurrentTrip(new CurrentTrip(selectedBusStop));
+
     }
 
     private void setAlightingAlarm() {
